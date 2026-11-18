@@ -1,0 +1,354 @@
+<app-layout>
+    <div class="flex flex-1 overflow-hidden">
+        <!-- Center Content Area -->
+        <div class="flex-1 overflow-y-auto p-4 lg:p-6 bg-gray-50">
+            <app-topbar tipo="mobile"></app-topbar>
+<!-- Help Header -->
+<div class="mb-6">
+    <h1 class="text-2xl font-bold text-gray-800">Centro de Ayuda y Soporte</h1>
+    <p class="text-gray-600">Encuentra respuestas a tus preguntas y aprende a usar Minitoys</p>
+</div>
+
+<!-- Search Bar (Mobile) -->
+<div class="lg:hidden mb-6">
+    <div class="relative">
+        <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+            <i class="fas fa-search"></i>
+        </span>
+        <input type="text" placeholder="Buscar en la ayuda" class="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-brand-orange focus:border-transparent">
+    </div>
+</div>
+
+<!-- Help Categories -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+    <div class="help-card bg-white rounded-xl shadow-sm p-5 border-l-4 border-brand-yellow">
+        <div class="flex items-center mb-3">
+            <div class="bg-yellow-100 p-2 rounded-lg mr-3">
+                <i class="fas fa-book text-brand-orange text-xl"></i>
+            </div>
+            <h3 class="text-lg font-bold">Guías de Usuario</h3>
+        </div>
+        <p class="text-gray-600 mb-3">Manuales detallados para aprender a usar todas las funciones.</p>
+        <a routerLink="/users/soporte" fragment="preguntas-frecuentes" class="text-brand-orange hover:underline flex items-center">
+            Ver guías <i class="fas fa-arrow-right ml-1"></i>
+        </a>
+    </div>
+
+    <div class="help-card bg-white rounded-xl shadow-sm p-5 border-l-4 border-brand-orange">
+        <div class="flex items-center mb-3">
+            <div class="bg-yellow-100 p-2 rounded-lg mr-3">
+                <i class="fas fa-video text-brand-orange text-xl"></i>
+            </div>
+            <h3 class="text-lg font-bold">Tutoriales en Video</h3>
+        </div>
+        <p class="text-gray-600 mb-3">Aprende visualmente con nuestros videos paso a paso.</p>
+        <a routerLink="/users/soporte" fragment="tutoriales" class="text-brand-orange hover:underline flex items-center">
+            Ver videos <i class="fas fa-arrow-right ml-1"></i>
+        </a>
+    </div>
+
+    <div class="help-card bg-white rounded-xl shadow-sm p-5 border-l-4 border-brand-yellow">
+        <div class="flex items-center mb-3">
+            <div class="bg-yellow-100 p-2 rounded-lg mr-3">
+                <i class="fas fa-headset text-brand-orange text-xl"></i>
+            </div>
+            <h3 class="text-lg font-bold">Soporte Técnico</h3>
+        </div>
+        <p class="text-gray-600 mb-3">Contacta con nuestro equipo para resolver problemas técnicos.</p>
+        <a routerLink="/users/soporte" fragment="contacto" class="text-brand-orange hover:underline flex items-center">
+            Contactar <i class="fas fa-arrow-right ml-1"></i>
+        </a>
+    </div>
+</div>
+
+<!-- Frequently Asked Questions -->
+<div id="preguntas-frecuentes" class="bg-white rounded-xl shadow-sm overflow-hidden mb-8">
+    <div class="p-4 border-b border-gray-100">
+        <h2 class="text-xl font-bold text-gray-800">Preguntas Frecuentes</h2>
+    </div>
+    <div class="p-6">
+        <div class="space-y-4">
+            <!-- FAQ Item 1 -->
+            <div class="accordion-item border border-gray-200 rounded-lg overflow-hidden">
+                <button class="accordion-header w-full flex justify-between items-center p-4 bg-gray-50 hover:bg-gray-100 transition-colors" onclick="toggleAccordion(this)">
+                    <span class="font-medium">¿Cómo puedo crear un nuevo pedido?</span>
+                    <i class="fas fa-chevron-down accordion-icon transition-transform"></i>
+                </button>
+                <div class="accordion-content px-4 pb-4">
+                    <p class="text-gray-600 pt-2">
+                        Para crear un nuevo pedido, sigue estos pasos:
+                    </p>
+                    <ol class="list-decimal pl-5 mt-2 space-y-1 text-gray-600">
+                        <li>Ve a la sección "Ventas" en el menú lateral</li>
+                        <li>Selecciona un cliente o crea uno nuevo</li>
+                        <li>Agrega los productos</li>
+                        <li>Establece la cantidad y completa los detalles de pago</li>
+                        <li>Haz clic en "Registrar Pedido"</li>
+                    </ol>
+                </div>
+            </div>
+
+            <!-- FAQ Item 2 -->
+            <div class="accordion-item border border-gray-200 rounded-lg overflow-hidden">
+                <button class="accordion-header w-full flex justify-between items-center p-4 bg-gray-50 hover:bg-gray-100 transition-colors" onclick="toggleAccordion(this)">
+                    <span class="font-medium">¿Cómo puedo gestionar el inventario de materiales?</span>
+                    <i class="fas fa-chevron-down accordion-icon transition-transform"></i>
+                </button>
+                <div class="accordion-content px-4 pb-4">
+                    <p class="text-gray-600 pt-2">
+                        Para gestionar el inventario de materiales, accede a la sección "Inventario" en el menú lateral. Allí podrás:
+                    </p>
+                    <ul class="list-disc pl-5 mt-2 space-y-1 text-gray-600">
+                        <li>Ver el stock actual de todos los materiales</li>
+                        <li>Añadir nuevos materiales al inventario</li>
+                        <li>Actualizar cantidades existentes</li>
+                        <li>Establecer alertas de stock bajo</li>
+                        <li>Generar reportes de inventario</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- FAQ Item 3 -->
+            <div class="accordion-item border border-gray-200 rounded-lg overflow-hidden">
+                <button class="accordion-header w-full flex justify-between items-center p-4 bg-gray-50 hover:bg-gray-100 transition-colors" onclick="toggleAccordion(this)">
+                    <span class="font-medium">¿Cómo puedo crear una copia de seguridad del sistema?</span>
+                    <i class="fas fa-chevron-down accordion-icon transition-transform"></i>
+                </button>
+                <div class="accordion-content px-4 pb-4">
+                    <p class="text-gray-600 pt-2">
+                        Para crear una copia de seguridad del sistema:
+                    </p>
+                    <ol class="list-decimal pl-5 mt-2 space-y-1 text-gray-600">
+                        <li>Ve a la sección "Ajustes" en el menú lateral</li>
+                        <li>Desplázate hasta la sección "Copia de Seguridad y Restauración"</li>
+                        <li>Haz clic en el botón "Crear Copia de Seguridad"</li>
+                        <li>Espera a que se complete el proceso</li>
+                        <li>Descarga el archivo de respaldo para guardarlo en un lugar seguro</li>
+                    </ol>
+                    <p class="text-gray-600 mt-2">
+                        Recomendamos crear copias de seguridad semanalmente para proteger tus datos.
+                    </p>
+                </div>
+            </div>
+
+            <!-- FAQ Item 4 -->
+            <div class="accordion-item border border-gray-200 rounded-lg overflow-hidden">
+                <button class="accordion-header w-full flex justify-between items-center p-4 bg-gray-50 hover:bg-gray-100 transition-colors" onclick="toggleAccordion(this)">
+                    <span class="font-medium">¿Cómo puedo generar reportes de ventas?</span>
+                    <i class="fas fa-chevron-down accordion-icon transition-transform"></i>
+                </button>
+                <div class="accordion-content px-4 pb-4">
+                    <p class="text-gray-600 pt-2">
+                        Para generar reportes de ventas:
+                    </p>
+                    <ol class="list-decimal pl-5 mt-2 space-y-1 text-gray-600">
+                        <li>Ve a la sección "Reportes" en el menú lateral</li>
+                        <li>Selecciona "Reporte de Ventas" en el menú de reportes</li>
+                        <li>Establece el rango de fechas para el reporte</li>
+                        <li>Selecciona los filtros adicionales si es necesario (por cliente, por producto, etc.)</li>
+                        <li>Haz clic en "Generar Reporte"</li>
+                        <li>Puedes exportar el reporte en formato PDF, Excel o CSV</li>
+                    </ol>
+                </div>
+            </div>
+
+            <!-- FAQ Item 5 -->
+            <div class="accordion-item border border-gray-200 rounded-lg overflow-hidden">
+                <button class="accordion-header w-full flex justify-between items-center p-4 bg-gray-50 hover:bg-gray-100 transition-colors" onclick="toggleAccordion(this)">
+                    <span class="font-medium">¿Cómo puedo añadir un nuevo usuario al sistema?</span>
+                    <i class="fas fa-chevron-down accordion-icon transition-transform"></i>
+                </button>
+                <div class="accordion-content px-4 pb-4">
+                    <p class="text-gray-600 pt-2">
+                        Para añadir un nuevo usuario al sistema:
+                    </p>
+                    <ol class="list-decimal pl-5 mt-2 space-y-1 text-gray-600">
+                        <li>Ve a la sección "Usuarios" en el menú lateral</li>
+                        <li>Haz clic en el botón "Añadir Usuario"</li>
+                        <li>Completa el formulario con la información del nuevo usuario</li>
+                        <li>Asigna el rol adecuado (Admin, Vendedor, Inventario, etc.)</li>
+                        <li>Establece los permisos específicos si es necesario</li>
+                        <li>Haz clic en "Guardar"</li>
+                    </ol>
+                    <p class="text-gray-600 mt-2">
+                        El nuevo usuario recibirá un correo electrónico con instrucciones para acceder al sistema.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Video Tutorials -->
+<div id="tutoriales" class="bg-white rounded-xl shadow-sm overflow-hidden mb-8">
+    <div class="p-4 border-b border-gray-100">
+        <h2 class="text-xl font-bold text-gray-800">Tutoriales en Video</h2>
+    </div>
+    <div class="p-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Video 1 -->
+            <div class="help-card rounded-lg overflow-hidden border border-gray-200">
+                <div class="aspect-w-16 aspect-h-9 bg-gray-200">
+                    <div class="w-full h-48 bg-gray-200 flex items-center justify-center">
+                        <i class="fas fa-play-circle text-5xl text-brand-orange"></i>
+                    </div>
+                </div>
+                <div class="p-4">
+                    <h3 class="font-bold mb-1">Introducción a Minitoys</h3>
+                    <p class="text-sm text-gray-600 mb-2">Aprende las funciones básicas del sistema</p>
+                    <div class="flex items-center text-xs text-gray-500">
+                        <i class="fas fa-clock mr-1"></i> 5:30 min
+                    </div>
+                </div>
+            </div>
+
+            <!-- Video 2 -->
+            <div class="help-card rounded-lg overflow-hidden border border-gray-200">
+                <div class="aspect-w-16 aspect-h-9 bg-gray-200">
+                    <div class="w-full h-48 bg-gray-200 flex items-center justify-center">
+                        <i class="fas fa-play-circle text-5xl text-brand-orange"></i>
+                    </div>
+                </div>
+                <div class="p-4">
+                    <h3 class="font-bold mb-1">Gestión de Pedidos</h3>
+                    <p class="text-sm text-gray-600 mb-2">Cómo crear y gestionar pedidos</p>
+                    <div class="flex items-center text-xs text-gray-500">
+                        <i class="fas fa-clock mr-1"></i> 7:45 min
+                    </div>
+                </div>
+            </div>
+
+            <!-- Video 3 -->
+            <div class="help-card rounded-lg overflow-hidden border border-gray-200">
+                <div class="aspect-w-16 aspect-h-9 bg-gray-200">
+                    <div class="w-full h-48 bg-gray-200 flex items-center justify-center">
+                        <i class="fas fa-play-circle text-5xl text-brand-orange"></i>
+                    </div>
+                </div>
+                <div class="p-4">
+                    <h3 class="font-bold mb-1">Control de Inventario</h3>
+                    <p class="text-sm text-gray-600 mb-2">Gestión eficiente de materiales y stock</p>
+                    <div class="flex items-center text-xs text-gray-500">
+                        <i class="fas fa-clock mr-1"></i> 6:20 min
+                    </div>
+                </div>
+            </div>
+
+            <!-- Video 4 -->
+            <div class="help-card rounded-lg overflow-hidden border border-gray-200">
+                <div class="aspect-w-16 aspect-h-9 bg-gray-200">
+                    <div class="w-full h-48 bg-gray-200 flex items-center justify-center">
+                        <i class="fas fa-play-circle text-5xl text-brand-orange"></i>
+                    </div>
+                </div>
+                <div class="p-4">
+                    <h3 class="font-bold mb-1">Reportes y Análisis</h3>
+                    <p class="text-sm text-gray-600 mb-2">Cómo generar informes detallados</p>
+                    <div class="flex items-center text-xs text-gray-500">
+                        <i class="fas fa-clock mr-1"></i> 8:15 min
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="mt-4 text-center">
+            <a routerLink="/users/soporte" fragment="tutoriales" class="text-brand-orange hover:underline inline-flex items-center">
+                Ver todos los tutoriales <i class="fas fa-arrow-right ml-1"></i>
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Contact Support -->
+<div id="contacto" class="bg-white rounded-xl shadow-sm overflow-hidden mb-8">
+    <div class="p-4 border-b border-gray-100">
+        <h2 class="text-xl font-bold text-gray-800">Contactar Soporte</h2>
+    </div>
+    <div class="p-6">
+        <p class="text-gray-600 mb-4">¿No encuentras la respuesta que buscas? Nuestro equipo de soporte está listo para ayudarte.</p>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            <div class="help-card p-4 bg-gray-50 rounded-lg text-center">
+                <i class="fas fa-envelope text-3xl text-brand-orange mb-2"></i>
+                <h3 class="font-medium mb-1">Email</h3>
+                <p class="text-sm text-gray-600">soporteminitoys.com</p>
+            </div>
+            <div class="help-card p-4 bg-gray-50 rounded-lg text-center">
+                <i class="fas fa-phone-alt text-3xl text-brand-orange mb-2"></i>
+                <h3 class="font-medium mb-1">Teléfono</h3>
+                <p class="text-sm text-gray-600">+591 76455678</p>
+            </div>
+            <div class="help-card p-4 bg-gray-50 rounded-lg text-center">
+                <i class="fas fa-comments text-3xl text-brand-orange mb-2"></i>
+                <h3 class="font-medium mb-1">Chat en Vivo</h3>
+                <p class="text-sm text-gray-600">Lun-Vie: 8am - 6pm</p>
+            </div>
+        </div>
+        
+        <div class="bg-gray-50 p-6 rounded-lg">
+            <h3 class="font-bold mb-4">Enviar un Mensaje</h3>
+            <form>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Nombre</label>
+                        <input type="text" class="w-full border border-gray-300 rounded-lg py-2 px-4 focus:outline-none focus:ring-2 focus:ring-brand-orange focus:border-transparent">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                        <input type="email" class="w-full border border-gray-300 rounded-lg py-2 px-4 focus:outline-none focus:ring-2 focus:ring-brand-orange focus:border-transparent">
+                    </div>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Asunto</label>
+                    <input type="text" class="w-full border border-gray-300 rounded-lg py-2 px-4 focus:outline-none focus:ring-2 focus:ring-brand-orange focus:border-transparent">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Mensaje</label>
+                    <textarea rows="4" class="w-full border border-gray-300 rounded-lg py-2 px-4 focus:outline-none focus:ring-2 focus:ring-brand-orange focus:border-transparent"></textarea>
+                </div>
+                <div class="flex justify-end">
+                    <button type="submit" class="bg-brand-orange text-white py-2 px-6 rounded-lg font-medium flex items-center">
+                        <i class="fas fa-paper-plane mr-2"></i> Enviar Mensaje
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<section id="politicas" class="bg-white rounded-xl shadow-sm overflow-hidden mb-8">
+    <div class="p-4 border-b border-gray-100">
+        <h2 class="text-xl font-bold text-gray-800">Política de Privacidad</h2>
+    </div>
+    <div class="p-6 text-gray-600 space-y-3">
+        <p>Minitoys utiliza la información registrada en el sistema para apoyar la gestión de ventas, clientes e inventario.</p>
+        <p>El acceso a esa información debe limitarse a las personas autorizadas. Evita compartir credenciales y registra únicamente los datos necesarios para las operaciones del negocio.</p>
+        <p>Para consultas sobre privacidad o el uso de información, contacta al equipo desde la sección <a routerLink="/users/soporte" fragment="contacto" class="text-brand-orange hover:underline">Contactar Soporte</a>.</p>
+    </div>
+</section>
+
+<section id="terminos" class="bg-white rounded-xl shadow-sm overflow-hidden mb-8">
+    <div class="p-4 border-b border-gray-100">
+        <h2 class="text-xl font-bold text-gray-800">Términos y Condiciones</h2>
+    </div>
+    <div class="p-6 text-gray-600 space-y-3">
+        <p>El sistema está destinado a la administración de las operaciones de Minitoys por parte de usuarios autorizados.</p>
+        <p>Cada usuario es responsable de proteger sus credenciales y de revisar la información que registra. El uso del sistema debe respetar las políticas internas del negocio y las normas aplicables.</p>
+        <p>Si necesitas ayuda con el acceso o el uso de una función, visita <a routerLink="/users/soporte" fragment="contacto" class="text-brand-orange hover:underline">Contactar Soporte</a>.</p>
+    </div>
+</section>
+
+<section id="redes" class="bg-white rounded-xl shadow-sm overflow-hidden mb-8">
+    <div class="p-4 border-b border-gray-100">
+        <h2 class="text-xl font-bold text-gray-800">Redes Sociales</h2>
+    </div>
+    <div class="p-6 text-gray-600">
+        <p>Los enlaces oficiales de Facebook, Instagram y X/Twitter todavía no están configurados en la aplicación. Consulta al equipo de soporte para confirmar los canales vigentes.</p>
+        <a routerLink="/users/soporte" fragment="contacto" class="inline-flex items-center mt-4 text-brand-orange hover:underline">
+            <i class="fas fa-headset mr-2"></i> Contactar Soporte
+        </a>
+    </div>
+</section>
+
+        </div>
+    </div>  
+</app-layout>

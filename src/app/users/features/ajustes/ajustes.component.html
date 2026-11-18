@@ -1,0 +1,286 @@
+<app-layout>
+    <div class="flex flex-1 overflow-hidden">
+        <!-- Center Content Area -->
+        <div class="flex-1 overflow-y-auto p-4 lg:p-6 bg-gray-50">
+            <app-topbar tipo="mobile"></app-topbar>
+            <!-- Settings Header -->
+            <div class="mb-6">
+                <h1 class="text-2xl font-bold text-gray-800">Ajustes</h1>
+                <p class="text-gray-600">Administra la configuración de tu cuenta y del sistema</p>
+            </div>
+
+            <!-- Settings Tabs -->
+            <div class="bg-white rounded-xl shadow-sm overflow-hidden mb-6">
+                <div class="flex border-b border-gray-200 overflow-x-auto">
+                    <button class="px-6 py-3 bg-brand-orange text-white font-medium whitespace-nowrap">Perfil</button>
+                    <button class="px-6 py-3 text-gray-600 hover:bg-gray-100 whitespace-nowrap">Cuenta</button>
+                    <button class="px-6 py-3 text-gray-600 hover:bg-gray-100 whitespace-nowrap">Notificaciones</button>
+                    <button class="px-6 py-3 text-gray-600 hover:bg-gray-100 whitespace-nowrap">Sistema</button>
+                    <button class="px-6 py-3 text-gray-600 hover:bg-gray-100 whitespace-nowrap">Apariencia</button>
+                    <button class="px-6 py-3 text-gray-600 hover:bg-gray-100 whitespace-nowrap">Seguridad</button>
+                </div>
+                
+                <!-- Profile Settings -->
+                <div class="p-6">
+                    <!-- Profile Photo -->
+                    <div class="mb-8 flex flex-col sm:flex-row items-center sm:items-start">
+                        <div class="relative mb-4 sm:mb-0 sm:mr-6">
+                            <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Diego Sandoval" class="w-24 h-24 rounded-full border-4 border-brand-yellow">
+                            <button class="absolute bottom-0 right-0 bg-brand-orange text-white p-2 rounded-full shadow-md">
+                                <i class="fas fa-camera"></i>
+                            </button>
+                        </div>
+                        <div class="text-center sm:text-left">
+                            <h2 class="text-xl font-bold">Diego Sandoval</h2>
+                            <p class="text-gray-600 mb-2">Admin</p>
+                            <div class="flex flex-wrap justify-center sm:justify-start gap-2">
+                                <button class="bg-brand-orange text-white px-4 py-2 rounded-lg text-sm font-medium">
+                                    Cambiar Foto
+                                </button>
+                                <button class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium">
+                                    Eliminar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Personal Information -->
+                    <div class="mb-8">
+                        <h3 class="text-lg font-bold text-gray-800 mb-4">Información Personal</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Nombre</label>
+                                <input type="text" value="Diego" class="w-full border border-gray-300 rounded-lg py-2 px-4 focus:outline-none focus:ring-2 focus:ring-brand-orange focus:border-transparent">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Apellido</label>
+                                <input type="text" value="Sandoval" class="w-full border border-gray-300 rounded-lg py-2 px-4 focus:outline-none focus:ring-2 focus:ring-brand-orange focus:border-transparent">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                                <input type="email" value="diego@minitoys.com" class="w-full border border-gray-300 rounded-lg py-2 px-4 focus:outline-none focus:ring-2 focus:ring-brand-orange focus:border-transparent">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Teléfono</label>
+                                <input type="tel" value="76455678" class="w-full border border-gray-300 rounded-lg py-2 px-4 focus:outline-none focus:ring-2 focus:ring-brand-orange focus:border-transparent">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Preferences -->
+                    <div class="mb-8">
+                        <h3 class="text-lg font-bold text-gray-800 mb-4">Preferencias</h3>
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h4 class="font-medium">Modo Oscuro</h4>
+                                    <p class="text-sm text-gray-500">Cambiar a tema oscuro</p>
+                                </div>
+                                <div class="relative inline-block w-12 mr-2 align-middle select-none">
+                                    <input type="checkbox" name="toggle" id="toggle-dark-mode" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer"/>
+                                    <label for="toggle-dark-mode" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h4 class="font-medium">Notificaciones por Email</h4>
+                                    <p class="text-sm text-gray-500">Recibir notificaciones por email</p>
+                                </div>
+                                <div class="relative inline-block w-12 mr-2 align-middle select-none">
+                                    <input type="checkbox" name="toggle" id="toggle-email" checked class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer"/>
+                                    <label for="toggle-email" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h4 class="font-medium">Notificaciones Push</h4>
+                                    <p class="text-sm text-gray-500">Recibir notificaciones push</p>
+                                </div>
+                                <div class="relative inline-block w-12 mr-2 align-middle select-none">
+                                    <input type="checkbox" name="toggle" id="toggle-push" checked class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer"/>
+                                    <label for="toggle-push" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Language and Region -->
+                    <div class="mb-8">
+                        <h3 class="text-lg font-bold text-gray-800 mb-4">Idioma y Región</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Idioma</label>
+                                <div class="relative">
+                                    <select class="w-full appearance-none border border-gray-300 rounded-lg py-2 px-4 pr-10 focus:outline-none focus:ring-2 focus:ring-brand-orange focus:border-transparent">
+                                        <option>Español</option>
+                                        <option>English</option>
+                                        <option>Português</option>
+                                    </select>
+                                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                                        <i class="fas fa-chevron-down"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Formato de Fecha</label>
+                                <div class="relative">
+                                    <select class="w-full appearance-none border border-gray-300 rounded-lg py-2 px-4 pr-10 focus:outline-none focus:ring-2 focus:ring-brand-orange focus:border-transparent">
+                                        <option>DD/MM/YYYY</option>
+                                        <option>MM/DD/YYYY</option>
+                                        <option>YYYY/MM/DD</option>
+                                    </select>
+                                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                                        <i class="fas fa-chevron-down"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Moneda</label>
+                                <div class="relative">
+                                    <select class="w-full appearance-none border border-gray-300 rounded-lg py-2 px-4 pr-10 focus:outline-none focus:ring-2 focus:ring-brand-orange focus:border-transparent">
+                                        <option>Bs (Boliviano)</option>
+                                        <option>USD (Dólar)</option>
+                                        <option>EUR (Euro)</option>
+                                    </select>
+                                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                                        <i class="fas fa-chevron-down"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Zona Horaria</label>
+                                <div class="relative">
+                                    <select class="w-full appearance-none border border-gray-300 rounded-lg py-2 px-4 pr-10 focus:outline-none focus:ring-2 focus:ring-brand-orange focus:border-transparent">
+                                        <option>La Paz (GMT-4)</option>
+                                        <option>Ciudad de México (GMT-6)</option>
+                                        <option>New York (GMT-5)</option>
+                                    </select>
+                                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                                        <i class="fas fa-chevron-down"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Save Button -->
+                    <div class="flex justify-end">
+                        <button class="bg-brand-orange text-white py-2 px-6 rounded-lg font-medium flex items-center">
+                            <i class="fas fa-save mr-2"></i> Guardar Cambios
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- System Information -->
+            <div class="bg-white rounded-xl shadow-sm overflow-hidden mb-6">
+                <div class="p-4 border-b border-gray-100">
+                    <h2 class="text-xl font-bold text-gray-800">Información del Sistema</h2>
+                </div>
+                <div class="p-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="settings-card p-4 bg-gray-50 rounded-lg">
+                            <div class="flex items-center mb-2">
+                                <i class="fas fa-code-branch text-brand-orange mr-2"></i>
+                                <h3 class="font-medium">Versión</h3>
+                            </div>
+                            <p class="text-gray-600">Minitoys v2.5.3</p>
+                        </div>
+                        <div class="settings-card p-4 bg-gray-50 rounded-lg">
+                            <div class="flex items-center mb-2">
+                                <i class="fas fa-database text-brand-orange mr-2"></i>
+                                <h3 class="font-medium">Base de Datos</h3>
+                            </div>
+                            <p class="text-gray-600">MySQL 8.0.28</p>
+                        </div>
+                        <div class="settings-card p-4 bg-gray-50 rounded-lg">
+                            <div class="flex items-center mb-2">
+                                <i class="fas fa-server text-brand-orange mr-2"></i>
+                                <h3 class="font-medium">Servidor</h3>
+                            </div>
+                            <p class="text-gray-600">Apache 2.4.52</p>
+                        </div>
+                        <div class="settings-card p-4 bg-gray-50 rounded-lg">
+                            <div class="flex items-center mb-2">
+                                <i class="fas fa-clock text-brand-orange mr-2"></i>
+                                <h3 class="font-medium">Última Actualización</h3>
+                            </div>
+                            <p class="text-gray-600">20 de Marzo, 2025</p>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-6">
+                        <button class="bg-gray-200 text-gray-700 py-2 px-6 rounded-lg font-medium flex items-center mr-2">
+                            <i class="fas fa-sync-alt mr-2"></i> Buscar Actualizaciones
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Backup and Restore -->
+            <div class="bg-white rounded-xl shadow-sm overflow-hidden mb-6">
+                <div class="p-4 border-b border-gray-100">
+                    <h2 class="text-xl font-bold text-gray-800">Copia de Seguridad y Restauración</h2>
+                </div>
+                <div class="p-6">
+                    <p class="text-gray-600 mb-4">Realiza copias de seguridad de tus datos o restaura desde una copia anterior.</p>
+                    
+                    <div class="flex flex-wrap gap-3">
+                        <button class="bg-brand-orange text-white py-2 px-6 rounded-lg font-medium flex items-center">
+                            <i class="fas fa-download mr-2"></i> Crear Copia de Seguridad
+                        </button>
+                        <button class="bg-gray-200 text-gray-700 py-2 px-6 rounded-lg font-medium flex items-center">
+                            <i class="fas fa-upload mr-2"></i> Restaurar
+                        </button>
+                    </div>
+                    
+                    <div class="mt-6">
+                        <h3 class="font-medium mb-2">Copias de Seguridad Recientes</h3>
+                        <div class="border border-gray-200 rounded-lg overflow-hidden">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tamaño</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">20 Mar 2025, 10:30 AM</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">24.5 MB</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                            <button class="text-brand-orange hover:text-brand-yellow mr-3">
+                                                <i class="fas fa-download"></i>
+                                            </button>
+                                            <button class="text-gray-500 hover:text-gray-700">
+                                                <i class="fas fa-trash-alt"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">15 Mar 2025, 09:15 AM</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">23.8 MB</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                            <button class="text-brand-orange hover:text-brand-yellow mr-3">
+                                                <i class="fas fa-download"></i>
+                                            </button>
+                                            <button class="text-gray-500 hover:text-gray-700">
+                                                <i class="fas fa-trash-alt"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <!-- Right Sidebar -->
+        <div class="hidden lg:block w-80 bg-white border-l border-gray-200 overflow-y-auto">
+            <app-soporte></app-soporte>
+        </div>
+    </div>  
+</app-layout>

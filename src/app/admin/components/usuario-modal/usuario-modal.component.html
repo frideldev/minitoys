@@ -1,0 +1,128 @@
+@if (isOpen) {
+    <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+        <!-- Modal Content -->
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-md" (click)="$event.stopPropagation()">
+            <!-- Modal Header -->
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h3 class="text-xl font-semibold text-gray-800">
+                    {{ isEdit ? 'Editar Usuario' : 'Nuevo Usuario' }}
+                </h3>
+            </div>
+
+            <!-- Modal Body -->
+            <form [formGroup]="usuarioForm" (ngSubmit)="onSubmit()" class="p-6">
+                <div class="space-y-4">
+                    <!-- Nombre -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Nombre</label>
+                        <input type="text" formControlName="name"
+                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-brand-orange focus:border-brand-orange">
+                        @if (usuarioForm.get('name')?.invalid && usuarioForm.get('name')?.touched) {
+                            <p class="mt-1 text-sm text-red-600">El nombre es requerido</p>
+                        }
+                    </div>
+
+                    <!-- Username -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Usuario</label>
+                        <input type="text" formControlName="username"
+                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-brand-orange focus:border-brand-orange">
+                        @if (usuarioForm.get('username')?.invalid && usuarioForm.get('username')?.touched) {
+                            <p class="mt-1 text-sm text-red-600">El usuario es requerido</p>
+                        }
+                    </div>
+                    <!-- Password -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Contraseña</label>
+                        <input type="password" formControlName="password"
+                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-brand-orange focus:border-brand-orange">
+                        @if (usuarioForm.get('password')?.invalid && usuarioForm.get('password')?.touched) {
+                            <p class="mt-1 text-sm text-red-600">{{ getPasswordError() }}</p>
+                        }
+                    </div>
+
+                    <!-- Password Confirmation -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Confirmar Contraseña</label>
+                        <input type="password" formControlName="password_confirmation"
+                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-brand-orange focus:border-brand-orange">
+                        @if (usuarioForm.errors?.['passwordMismatch'] && usuarioForm.get('password_confirmation')?.touched) {
+                            <p class="mt-1 text-sm text-red-600">Las contraseñas no coinciden</p>
+                        }
+                    </div>
+
+                    <!-- Email -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                        <input type="email" formControlName="email"
+                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-brand-orange focus:border-brand-orange">
+                        @if (usuarioForm.get('email')?.invalid && usuarioForm.get('email')?.touched) {
+                            <p class="mt-1 text-sm text-red-600">
+                                @if (usuarioForm.get('email')?.errors?.['required']) {
+                                    El email es requerido
+                                } @else if (usuarioForm.get('email')?.errors?.['email']) {
+                                    El formato del email no es válido
+                                }
+                            </p>
+                        }
+                    </div>
+
+                    <!-- Sucursal Select -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Sucursal</label>
+                        @if (state().status === 'loading') {
+                            <div class="animate-pulse bg-gray-200 h-10 rounded-md"></div>
+                        } @else if (state().status === 'error') {
+                            <p class="text-red-600 text-sm">{{ state().error }}</p>
+                        } @else {
+                            <select formControlName="id_sucursal"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-brand-orange focus:border-brand-orange">
+                                <option value="">Seleccione una sucursal</option>
+                                @for (sucursal of state().sucursales; track sucursal.id) {
+                                    <option [value]="sucursal.id">{{ sucursal.lugar }}</option>
+                                }
+                            </select>
+                            @if (usuarioForm.get('id_sucursal')?.invalid && usuarioForm.get('id_sucursal')?.touched) {
+                                <p class="mt-1 text-sm text-red-600">La sucursal es requerida</p>
+                            }
+                        }
+                    </div>
+                      <!-- Rol Select -->
+                      <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Sucursal</label>
+                        @if (state().status === 'loading') {
+                            <div class="animate-pulse bg-gray-200 h-10 rounded-md"></div>
+                        } @else if (state().status === 'error') {
+                            <p class="text-red-600 text-sm">{{ state().error }}</p>
+                        } @else {
+                            <select formControlName="id_rol"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-brand-orange focus:border-brand-orange">
+                                <option value="">Seleccione un rol</option>
+                               
+                                    <option [value]="1">Administrador</option>
+                                    <option [value]="2">Usuario</option>
+                            </select>
+                            @if (usuarioForm.get('id_rol')?.invalid && usuarioForm.get('id_rol')?.touched) {
+                                <p class="mt-1 text-sm text-red-600">El rol es requerido</p>
+                            }
+                        }
+                    </div>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="mt-6 flex justify-end gap-3">
+                    <button type="button" 
+                            (click)="onClose()"
+                            class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-orange">
+                        Cancelar
+                    </button>
+                    <button type="submit"
+                            [disabled]="!usuarioForm.valid"
+                            class="px-4 py-2 bg-gradient-to-r from-brand-yellow to-brand-orange text-white rounded-md hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-orange disabled:opacity-50">
+                        {{ isEdit ? 'Actualizar' : 'Guardar' }}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+}

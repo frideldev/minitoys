@@ -1,0 +1,84 @@
+<div class="flex h-full w-full overflow-hidden">
+    <!-- Left Panel - Login Form -->
+    <div class="w-full md:w-2/5 p-8 md:p-12 flex flex-col justify-center">
+        <div class="max-w-md mx-auto w-full">
+            <!-- Logo -->
+            <div class="flex items-center mb-8">
+                <div class="mr-3 shrink-0">
+                    <img [src]="'./assets/image/logo.png'" alt="Minitoys" class="h-16 w-16 object-contain">
+                </div>
+                <h1 class="text-2xl font-bold tracking-wider">MINITOYS</h1>
+            </div>
+
+            <!-- Welcome Text -->
+            <h2 class="text-xl font-semibold text-gray-800 mb-6">BIENVENIDO AL SISTEMA</h2>
+            <p class="text-gray-600 mb-8">Ingresa tus credenciales para acceder al sistema</p>
+
+            <!-- Login Form -->
+            <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+                <div class="space-y-4">
+                    <div>
+                        <label for="username" class="block text-sm font-medium text-gray-700">Usuario</label>
+                        <input 
+                            id="username"
+                            type="text"
+                            formControlName="username"
+                            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                        >
+                    </div>
+
+                    <div>
+                        <label for="password" class="block text-sm font-medium text-gray-700">Contraseña</label>
+                        <input 
+                            id="password"
+                            type="password"
+                            formControlName="password"
+                            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                        >
+                    </div>
+
+                    <!-- Error Message -->
+                    <div *ngIf="state().error" class="text-red-600 text-sm">
+                        {{ state().error }}
+                    </div>
+
+                    <!-- Replace the existing button -->
+                    <button 
+                        type="submit"
+                        [disabled]="!loginForm.valid || state().status === 'loading'"
+                        class="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
+                    >
+                        <div class="flex items-center justify-center">
+                            @if (state().status === 'loading') {
+                                <div class="inline-flex items-center">
+                                    <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
+                                    <span>Iniciando sesión...</span>
+                                </div>
+                            } @else {
+                                <span>Iniciar Sesión</span>
+                            }
+                        </div>
+                    </button>
+
+                    <!-- Error message -->
+                    @if (state().status === 'error') {
+                        <div class="mt-2 text-sm text-red-600">
+                            {{ state().error }}
+                        </div>
+                    }
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Right Panel - Background Image -->
+    <div class="hidden md:block md:w-3/5 relative">
+        <div class="absolute inset-0 bg-black opacity-40 z-10"></div>
+        <div class="absolute inset-0 z-20 flex items-center justify-center p-12">
+        </div>
+        <img [src]="'./assets/image/fondo.png'" alt="Minitoys" class="h-full w-full object-cover">
+    </div>
+</div>

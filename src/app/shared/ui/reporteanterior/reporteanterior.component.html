@@ -1,0 +1,224 @@
+<!-- Cierres de Caja - Reportes Anteriores -->
+<div class="bg-gray-50 h-full">
+  <!-- Header con Filtros Mejorados -->
+  <div class="bg-white p-4 border-b border-gray-200">
+    <div class="flex items-center justify-between mb-4">
+      <div>
+        <h3 class="text-lg font-bold text-brand-orange">Cierres de Caja</h3>
+        <p class="text-sm text-gray-600">Historial de cierres anteriores</p>
+      </div>
+      <!-- Botones de Acciones -->
+      <div class="flex gap-2">
+        <!-- Botón PDF Mensual -->
+        <button 
+          (click)="imprimirReportePDF()"
+          [disabled]="isLoading()"
+          class="bg-brand-orange text-white py-2 px-3 rounded-lg hover:bg-orange-600 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+          [title]="'Descargar PDF del mes ' + (filtros().mes !== 'Todos' && filtros().mes !== '' ? filtros().mes : mesActual)">
+          <i class="fas fa-file-pdf"></i>
+          <span class="hidden md:inline">PDF Mes</span>
+        </button>
+
+        <!-- Información del filtro actual -->
+        @if (filtros().mes !== 'Todos' && filtros().mes !== '') {
+          <div class="text-xs text-gray-600 flex items-center px-2 py-1 bg-gray-100 rounded">
+            <i class="fas fa-filter mr-1"></i>
+            <span>{{ filtros().mes }} {{ getAnoFiltro() }}</span>
+          </div>
+        }
+
+
+      </div>
+    </div>
+
+    <!-- Filtros Compactos -->
+    <div class="space-y-3">
+      <!-- Fila de selectores: Mes + Año -->
+      <div class="flex gap-2">
+        <!-- Selector de Mes -->
+        <div class="flex-1">
+          <select 
+            [(ngModel)]="mesSeleccionado" 
+            (change)="onMesChange()"
+            class="w-full border border-gray-300 rounded-lg py-2 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-orange focus:border-transparent">
+            @for (mes of mesesDisponibles; track mes) {
+              <option [value]="mes">{{ mes }}</option>
+            }
+          </select>
+        </div>
+        <!-- Selector de Año -->
+        <div class="w-28">
+          <select
+            [(ngModel)]="anoSeleccionado"
+            (change)="onAnoChange()"
+            class="w-full border border-gray-300 rounded-lg py-2 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-orange focus:border-transparent">
+            @for (ano of anosDisponibles; track ano) {
+              <option [value]="ano">{{ ano }}</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      <!-- Buscador -->
+      <div class="relative">
+        <input 
+          type="text" 
+          [(ngModel)]="busquedaInput"
+          (input)="onBusquedaChange()"
+          placeholder="Buscar por fecha, ID o monto..."
+          class="w-full border border-gray-300 rounded-lg py-2 px-3 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-brand-orange focus:border-transparent">
+        <button 
+          *ngIf="busquedaInput"
+          (click)="limpiarBusqueda()"
+          class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600">
+          <i class="fas fa-times text-sm"></i>
+        </button>
+        <i *ngIf="!busquedaInput" class="fas fa-search absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+      </div>
+
+      <!-- Información de Resultados -->
+      <div class="flex items-center justify-between text-xs text-gray-600">
+        <span><strong>{{ totalItems() }}</strong> resultados</span>
+        <span>Página {{ paginaActual() }} de {{ totalPaginas() }}</span>
+      </div>
+    </div>
+  </div>
+  <!-- Lista de Cierres Compacta -->
+  <div class="flex-1 overflow-y-auto">
+    <!-- Estado de Carga -->
+    @if (isLoading()) {
+      <div class="flex flex-col items-center justify-center py-8">
+        <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-brand-orange"></div>
+        <p class="text-gray-600 mt-2 text-sm">Cargando...</p>
+      </div>
+    }
+
+    <!-- Error -->
+    @if (error()) {
+      <div class="text-center py-8">
+        <div class="text-red-500 mb-2">
+          <i class="fas fa-exclamation-triangle text-xl"></i>
+        </div>
+        <p class="text-red-600 text-sm">{{ error() }}</p>
+        <button 
+          (click)="cargarCierres()"
+          class="mt-2 bg-brand-orange text-white py-1 px-3 rounded-lg hover:bg-orange-600 transition-colors text-sm">
+          Reintentar
+        </button>
+      </div>
+    }
+
+    <!-- Lista de Cierres -->
+    @if (!isLoading() && !error() && cierres().length > 0) {
+      <div class="p-4 space-y-3">
+        @for (cierre of cierres(); track cierre.id) {
+          <div class="bg-white border border-gray-200 rounded-lg p-3 hover:shadow-md transition-shadow">
+            <!-- Header del Cierre -->
+            <div class="flex items-center justify-between mb-2">
+              <div class="flex items-center gap-2">
+                <span class="text-sm font-bold text-gray-900">Cierre #{{ cierre.id }}</span>
+                <span class="px-2 py-1 rounded-full text-xs font-medium" 
+                      [class]="getEstadoClass(cierre.estado)">
+                  <i [class]="getEstadoIcon(cierre.estado)" class="mr-1"></i>
+                  {{ cierre.estado | titlecase }}
+                </span>
+              </div>
+              
+              <!-- Acciones -->
+              <div class="flex items-center">
+                <button 
+                  (click)="descargarPDF(cierre, $event)"
+                  class="bg-brand-orange text-white py-1 px-2 rounded text-xs hover:bg-orange-600 transition-colors"
+                  title="Descargar PDF">
+                  <i class="fas fa-file-pdf"></i>
+                </button>
+              </div>
+            </div>
+            
+            <!-- Fecha -->
+            <div class="text-xs text-gray-600 mb-2">
+              <i class="fas fa-calendar-alt mr-1"></i>
+              {{ formatearFecha(cierre.fecha) }}
+            </div>
+
+            <!-- Información compacta -->
+            <div class="grid grid-cols-1 gap-1 text-xs">
+              <div class="flex items-center justify-between">
+                <span class="text-gray-700">Total:</span>
+                <span class="font-bold text-green-600">{{ formatearMoneda(cierre.montoTotal) }}</span>
+              </div>
+              
+              <div class="flex items-center justify-between">
+                <span class="text-gray-700">Ventas:</span>
+                <span class="font-medium text-blue-600">{{ cierre.cantidadVentas }}</span>
+              </div>
+              
+              <!-- Solo mostrar pendientes si es > 0 -->
+              @if (cierre.ventasPendientes > 0) {
+                <div class="flex items-center justify-between">
+                  <span class="text-gray-700">Pendientes:</span>
+                  <span class="font-medium text-orange-600">{{ cierre.ventasPendientes }}</span>
+                </div>
+              }
+
+              <!-- Indicador de fuente de datos -->
+              <div class="text-xs text-gray-500 mt-1 pt-1 border-t border-gray-100">
+                <i class="fas fa-database mr-1"></i>
+                <span>Datos del API</span>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    }
+
+    <!-- Sin Resultados -->
+    @if (!isLoading() && !error() && cierres().length === 0) {
+      <div class="text-center py-8">
+        <div class="text-gray-400 mb-2">
+          <i class="fas fa-folder-open text-2xl"></i>
+        </div>
+        <p class="text-gray-600 text-sm">No se encontraron cierres</p>
+        <p class="text-xs text-gray-500 mt-1">Intenta ajustar los filtros</p>
+      </div>
+    }
+  </div>
+
+  <!-- Paginación Mejorada -->
+  @if (!isLoading() && !error() && totalPaginas() > 1) {
+    <div class="bg-white border-t border-gray-200 p-3">
+      <div class="flex items-center justify-center">
+        <!-- Controles de Paginación -->
+        <div class="flex items-center gap-1">
+          <!-- Botón Anterior -->
+          <button 
+            (click)="paginaAnterior()"
+            [disabled]="paginaActual() === 1"
+            class="py-1 px-2 rounded border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm">
+            <i class="fas fa-chevron-left"></i>
+          </button>
+
+          <!-- Números de Página (máximo 3 visibles) -->
+          @for (pagina of paginasVisibles; track pagina) {
+            <button 
+              (click)="irAPagina(pagina)"
+              [class]="paginaActual() === pagina ? 
+                'bg-brand-orange text-white' : 
+                'bg-white text-gray-700 hover:bg-gray-50'"
+              class="py-1 px-2 rounded border border-gray-300 transition-colors text-sm min-w-[28px]">
+              {{ pagina }}
+            </button>
+          }
+
+          <!-- Botón Siguiente -->
+          <button 
+            (click)="paginaSiguiente()"
+            [disabled]="paginaActual() === totalPaginas()"
+            class="py-1 px-2 rounded border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm">
+            <i class="fas fa-chevron-right"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+</div>

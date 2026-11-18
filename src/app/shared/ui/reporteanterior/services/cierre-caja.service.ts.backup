@@ -1,0 +1,371 @@
+import { Injectable, inject } from '@angular/core';
+import { Observable, of, delay } from 'rxjs';
+import { map, catchError } from 'rxjs/operators';
+import { CierreCaja, FiltroCierreCaja, ResponseCierreCaja } from '../interfaces/cierre-caja.interface';
+import { CajaDiariaService, CajaReal } from '../../../../users/features/reportes/services/caja-diaria.service';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class CierreCajaService {
+  private cajaDiariaService = inject(CajaDiariaService);
+
+    /**
+   * Valida que el parseo de fecha sea correcto comparando con la fecha original
+   */
+  private validarParseoFecha(fechaOriginal: string, mesIndexCalculado: number, añoCalculado: number): void {
+    // Extraer mes y año de la fecha original para comparar
+    if (fechaOriginal && fechaOriginal.match(/^\d{4}-\d{2}-\d{2}$/)) {
+      const [añoOriginal, mesOriginal] = fechaOriginal.split('-');
+      const mesIndexOriginal = parseInt(mesOriginal) - 1; // 0-indexed
+      const añoOriginalNum = parseInt(añoOriginal);
+      
+      const esCorrectoMes = mesIndexCalculado === mesIndexOriginal;
+      const esCorrectoAño = añoCalculado === añoOriginalNum;
+      
+      if (esCorrectoMes && esCorrectoAño) {
+        console.log('✅ [CierreCaja] VALIDACIÓN EXITOSA - Fecha parseada correctamente');
+        console.log(`   - ${fechaOriginal} → Mes ${mesIndexCalculado + 1} (${mesIndexOriginal + 1}), Año ${añoCalculado} (${añoOriginalNum})`);
+      } else {
+        console.error('❌ [CierreCaja] ERROR EN PARSEO - Fecha mal interpretada:');
+        console.error(`   - Original: ${fechaOriginal}`);
+        console.error(`   - Esperado: Mes ${mesIndexOriginal + 1}, Año ${añoOriginalNum}`);
+        console.error(`   - Obtenido: Mes ${mesIndexCalculado + 1}, Año ${añoCalculado}`);
+        console.error('   - ¿Mes correcto?:', esCorrectoMes);
+        console.error('   - ¿Año correcto?:', esCorrectoAño);
+      }
+    }
+  }
+
+  // NO más métodos de datos de ejemplo - solo conexión al API real
+}
+
+  /**
+   * Obtiene los cierres de caja con filtros y paginación usando SOLO la API real
+   */
+  getCierresCaja(filtros: FiltroCierreCaja, pagina: number = 1): Observable<ResponseCierreCaja> {
+    const itemsPorPagina = 5;
+
+    console.log('🌐 [CierreCaja] Llamada al API con filtros:', filtros);
+
+    // Si hay filtro de mes específico, usar API de mes
+    if (filtros.mes && filtros.mes !== 'todos' && filtros.mes !== '') {
+      const mesNumero = this.obtenerNumeroMes(filtros.mes);
+      if (mesNumero > 0) {
+        console.log(`🌐 [CierreCaja] Usando API /caja/mes/${filtros.año}-${mesNumero.toString().padStart(2, '0')}`);
+        return this.cajaDiariaService.getCajasPorMes(filtros.año, mesNumero).pipe(
+          map(response => this.convertirCajaMesAResponse(response, filtros, pagina, itemsPorPagina)),
+          catchError((error) => {
+            console.error('❌ [CierreCaja] Error al obtener cajas del mes:', error);
+            return of(this.getResponseVacio());
+          })
+        );
+      }
+    }
+
+    // Si no hay filtro de mes específico, usar API de todas las cajas
+    console.log('🌐 [CierreCaja] Usando API /cajas');
+    return this.cajaDiariaService.getAllCajas(pagina, itemsPorPagina).pipe(
+      map(response => this.convertirCajasAResponse(response, filtros)),
+      catchError((error) => {
+        console.error('❌ [CierreCaja] Error al obtener todas las cajas:', error);
+        return of(this.getResponseVacio());
+      })
+    );
+  }
+
+  /**
+   * Genera una respuesta vacía cuando el API falla
+   */
+  private getResponseVacio(): ResponseCierreCaja {
+    return {
+      cierres: [],
+      paginacion: {
+        paginaActual: 1,
+        totalPaginas: 0,
+        itemsPorPagina: 5,
+        totalItems: 0
+      }
+    };
+  }
+
+  /**
+   * Obtiene lista de meses disponibles desde el API real
+   */
+  getMesesDisponibles(): string[] {
+    // Lista básica de meses - idealmente esto debería venir del API
+    const todosMeses = [
+      'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+      'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+    ];
+    
+    console.log('📅 [CierreCaja] Meses disponibles - debería obtenerse del API');
+    return ['Todos', ...todosMeses];
+  }
+
+  /**
+   * Obtiene el mes actual basado en fecha real (NO hardcodeado)
+   */
+  getMesActual(): string {
+    const meses = [
+      'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+      'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+    ];
+    
+    // Usar la fecha real del sistema
+    const fechaActual = new Date();
+    const mesActual = fechaActual.getMonth(); // 0-11
+    
+    console.log('📅 [CierreCaja] Mes actual detectado:', meses[mesActual]);
+    return meses[mesActual];
+  }
+
+  /**
+   * Descargar PDF del cierre de caja usando SOLO la API real
+   */
+  descargarPDF(cierreId: number): void {
+    console.log('📄 [CierreCaja] Solicitando descarga PDF para caja ID:', cierreId);
+    
+    // No usar datos de ejemplo, obtener la fecha directamente del API
+    // Por ahora usaremos el formato estándar, pero idealmente debería venir del API
+    const fechaHoy = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+    
+    console.log('📄 [CierreCaja] Usando fecha actual para PDF:', fechaHoy);
+    this.cajaDiariaService.descargarPDFDiario(fechaHoy);
+  }
+
+  /**
+   * Descargar PDF mensual
+   */
+  descargarPDFMensual(año: number, mes: string): void {
+    const mesNumero = this.obtenerNumeroMes(mes);
+    if (mesNumero > 0) {
+      this.cajaDiariaService.descargarPDFMensual(año, mesNumero);
+    }
+  }
+
+  /**
+   * Convierte el nombre del mes a número
+   */
+  private obtenerNumeroMes(nombreMes: string): number {
+    const meses: { [key: string]: number } = {
+      'enero': 1, 'febrero': 2, 'marzo': 3, 'abril': 4,
+      'mayo': 5, 'junio': 6, 'julio': 7, 'agosto': 8,
+      'septiembre': 9, 'octubre': 10, 'noviembre': 11, 'diciembre': 12
+    };
+    return meses[nombreMes.toLowerCase()] || 0;
+  }
+
+  /**
+   * Convierte respuesta de CajaMesResponse a ResponseCierreCaja
+   */
+  private convertirCajaMesAResponse(
+    response: any, 
+    filtros: FiltroCierreCaja, 
+    pagina: number, 
+    itemsPorPagina: number
+  ): ResponseCierreCaja {
+    let cajasConvertidas = response.cajas.map((caja: CajaReal) => this.convertirCajaRealACierreCaja(caja));
+
+    // Aplicar filtro de búsqueda si existe
+    if (filtros.busqueda && filtros.busqueda.trim()) {
+      const busqueda = filtros.busqueda.toLowerCase();
+      cajasConvertidas = cajasConvertidas.filter((cierre: CierreCaja) => 
+        cierre.fecha.includes(busqueda) ||
+        cierre.montoTotal.toString().includes(busqueda) ||
+        cierre.id.toString().includes(busqueda)
+      );
+    }
+
+    // Aplicar paginación
+    const totalItems = cajasConvertidas.length;
+    const totalPaginas = Math.ceil(totalItems / itemsPorPagina);
+    const inicio = (pagina - 1) * itemsPorPagina;
+    const fin = inicio + itemsPorPagina;
+    const cierresPaginados = cajasConvertidas.slice(inicio, fin);
+
+    return {
+      cierres: cierresPaginados,
+      paginacion: {
+        paginaActual: pagina,
+        totalPaginas,
+        itemsPorPagina,
+        totalItems
+      }
+    };
+  }
+
+  /**
+   * Convierte respuesta de CajasResponse a ResponseCierreCaja
+   */
+  private convertirCajasAResponse(response: any, filtros: FiltroCierreCaja): ResponseCierreCaja {
+    let cajasConvertidas = response.cajas.map((caja: CajaReal) => this.convertirCajaRealACierreCaja(caja));
+
+    // Aplicar filtro de búsqueda si existe
+    if (filtros.busqueda && filtros.busqueda.trim()) {
+      const busqueda = filtros.busqueda.toLowerCase();
+      cajasConvertidas = cajasConvertidas.filter((cierre: CierreCaja) => 
+        cierre.fecha.includes(busqueda) ||
+        cierre.montoTotal.toString().includes(busqueda) ||
+        cierre.id.toString().includes(busqueda)
+      );
+    }
+
+    return {
+      cierres: cajasConvertidas,
+      paginacion: response.paginacion ? {
+        paginaActual: response.paginacion.pagina_actual,
+        totalPaginas: response.paginacion.total_paginas,
+        itemsPorPagina: response.paginacion.items_por_pagina,
+        totalItems: response.paginacion.total_items
+      } : {
+        paginaActual: 1,
+        totalPaginas: 1,
+        itemsPorPagina: cajasConvertidas.length,
+        totalItems: cajasConvertidas.length
+      }
+    };
+  }
+
+  /**
+   * Convierte CajaReal (estructura del API) a CierreCaja para compatibilidad con el componente
+   */
+  private convertirCajaRealACierreCaja(caja: CajaReal): CierreCaja {
+    console.log('🔄 [CierreCaja] === INICIANDO CONVERSIÓN ===');
+    console.log('📅 [CierreCaja] Fecha recibida del API:', caja.fecha);
+    console.log('🏷️ [CierreCaja] Tipo de fecha:', typeof caja.fecha);
+    
+    // 🔧 CORRECCIÓN: Procesar fecha sin problemas de zona horaria
+    const fechaOriginal = caja.fecha; // Por ejemplo: "2025-08-23"
+    let fecha: Date;
+    let mesIndex: number;
+    let año: number;
+    
+    console.log('🔍 [CierreCaja] Analizando fecha original:', fechaOriginal);
+    
+    try {
+      // ✅ SOLUCIÓN: Parsear fecha manualmente para evitar zona horaria UTC
+      if (fechaOriginal && fechaOriginal.match(/^\d{4}-\d{2}-\d{2}$/)) {
+        const [añoStr, mesStr, diaStr] = fechaOriginal.split('-');
+        
+        // Crear fecha local (sin UTC) - mes es 0-indexed en JavaScript
+        fecha = new Date(parseInt(añoStr), parseInt(mesStr) - 1, parseInt(diaStr));
+        mesIndex = parseInt(mesStr) - 1; // 0-indexed para el array de meses
+        año = parseInt(añoStr);
+        
+        console.log('✅ [CierreCaja] Fecha parseada manualmente:');
+        console.log('   - Año parseado:', añoStr, '→', año);
+        console.log('   - Mes parseado:', mesStr, '→', mesIndex, '(0-indexed)');
+        console.log('   - Día parseado:', diaStr);
+        console.log('   - Fecha object resultante:', fecha);
+        
+      } else {
+        console.warn('⚠️ [CierreCaja] Formato de fecha no reconocido, usando fallback');
+        fecha = new Date();
+        mesIndex = fecha.getMonth();
+        año = fecha.getFullYear();
+      }
+      
+      // Verificar si la fecha es válida
+      if (isNaN(fecha.getTime())) {
+        console.error('❌ [CierreCaja] Fecha inválida después del parseo:', fechaOriginal);
+        fecha = new Date();
+        mesIndex = fecha.getMonth();
+        año = fecha.getFullYear();
+      }
+      
+    } catch (error) {
+      console.error('❌ [CierreCaja] Error al procesar fecha:', error);
+      fecha = new Date();
+      mesIndex = fecha.getMonth();
+      año = fecha.getFullYear();
+    }
+    
+    const meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+                  'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+    
+    const mesNombre = meses[mesIndex];
+    
+    console.log('📅 [CierreCaja] Resultado final del parseo:');
+    console.log('   - Fecha original API:', fechaOriginal);
+    console.log('   - Mes índice final:', mesIndex);
+    console.log('   - Mes nombre final:', mesNombre);
+    console.log('   - Año final:', año);
+    
+    // ✅ VALIDACIÓN SIMPLE: Mostrar comparación directa
+    if (fechaOriginal.match(/^\d{4}-\d{2}-\d{2}$/)) {
+      const [añoOrig, mesOrig] = fechaOriginal.split('-');
+      const mesEsperado = parseInt(mesOrig);
+      const mesObtenido = mesIndex + 1; // Convertir de 0-indexed a 1-indexed
+      
+      if (mesEsperado === mesObtenido) {
+        console.log('✅ [CierreCaja] FECHA CORRECTA:', fechaOriginal, '→', mesNombre);
+      } else {
+        console.error('❌ [CierreCaja] ERROR DE FECHA:', fechaOriginal, 'esperado mes', mesEsperado, 'obtenido', mesObtenido);
+      }
+    }
+    
+    // Calcular totales por forma de pago desde el campo 'detalle'
+    const formasPago = Object.keys(caja.detalle);
+    const totalEfectivo = formasPago.includes('1') ? parseFloat(caja.detalle['1'] || '0') : 0;
+    const totalTarjeta = formasPago.includes('2') ? parseFloat(caja.detalle['2'] || '0') : 0;
+    const totalTransferencia = formasPago.includes('3') ? parseFloat(caja.detalle['3'] || '0') : 0;
+    
+    console.log('� [CierreCaja] Totales calculados:', {
+      totalEfectivo, totalTarjeta, totalTransferencia
+    });
+    
+    const cierreConvertido: CierreCaja = {
+      id: caja.id,
+      fecha: fechaOriginal, // ✅ IMPORTANTE: Mantener fecha original del API
+      mes: mesNombre,
+      año: año,
+      montoTotal: caja.total,
+      cantidadVentas: caja.ventas,
+      ventasPendientes: 0, // La estructura del API no incluye ventas pendientes por caja
+      pdfUrl: `/caja/pdf/${fechaOriginal}`, // URL para descarga PDF diaria
+      estado: 'cerrado' // Las cajas en el API histórico están cerradas
+    };
+    
+    console.log('✅ [CierreCaja] Conversión completada:');
+    console.log('   - ID:', cierreConvertido.id);
+    console.log('   - Fecha final:', cierreConvertido.fecha);
+    console.log('   - Mes:', cierreConvertido.mes);
+    console.log('   - Año:', cierreConvertido.año);
+    console.log('   - Total:', cierreConvertido.montoTotal);
+    console.log('🔄 [CierreCaja] === CONVERSIÓN COMPLETADA ===\n');
+    
+    return cierreConvertido;
+  }
+
+  /**
+   * Valida que el parseo de fecha sea correcto comparando con la fecha original
+   */
+  private validarParseoFecha(fechaOriginal: string, mesIndexCalculado: number, añoCalculado: number): void {
+    // Extraer mes y año de la fecha original para comparar
+    if (fechaOriginal && fechaOriginal.match(/^\d{4}-\d{2}-\d{2}$/)) {
+      const [añoOriginal, mesOriginal] = fechaOriginal.split('-');
+      const mesIndexOriginal = parseInt(mesOriginal) - 1; // 0-indexed
+      const añoOriginalNum = parseInt(añoOriginal);
+      
+      const esCorrectoMes = mesIndexCalculado === mesIndexOriginal;
+      const esCorrectoAño = añoCalculado === añoOriginalNum;
+      
+      if (esCorrectoMes && esCorrectoAño) {
+        console.log('✅ [CierreCaja] VALIDACIÓN EXITOSA - Fecha parseada correctamente');
+        console.log(`   - ${fechaOriginal} → Mes ${mesIndexCalculado + 1} (${mesIndexOriginal + 1}), Año ${añoCalculado} (${añoOriginalNum})`);
+      } else {
+        console.error('❌ [CierreCaja] ERROR EN PARSEO - Fecha mal interpretada:');
+        console.error(`   - Original: ${fechaOriginal}`);
+        console.error(`   - Esperado: Mes ${mesIndexOriginal + 1}, Año ${añoOriginalNum}`);
+        console.error(`   - Obtenido: Mes ${mesIndexCalculado + 1}, Año ${añoCalculado}`);
+        console.error('   - ¿Mes correcto?:', esCorrectoMes);
+        console.error('   - ¿Año correcto?:', esCorrectoAño);
+      }
+    }
+  }
+}
+    
+    return cierreConvertido;
+  }
+}

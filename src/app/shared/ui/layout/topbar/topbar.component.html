@@ -1,0 +1,80 @@
+ @if(tipo==='desktop'){
+ <!-- Top Navigation Bar (Desktop) -->
+ <header class="hidden lg:block bg-white border-b border-gray-200 shadow-sm">
+    <div class="flex justify-between items-center px-6 py-3">
+        <div class="relative">
+            <h1 class="text-lg font-semibold text-gray-800">Minitoys</h1>
+        </div>
+        <div class="flex items-center">
+            @if (user) {
+                <div class="flex items-center">
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-r from-brand-yellow to-brand-orange flex items-center justify-center text-white font-medium">
+                        {{ user.name.charAt(0).toUpperCase() }}
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm font-medium">{{ user.name }}</p>
+                        <p class="text-xs text-gray-500">{{ getRoleName(user.id_rol) }}</p>
+                    </div>
+                </div>
+            }
+            <div class="ml-4 relative">
+                <button class="text-gray-400 hover:text-gray-600" 
+                        (click)="showDropdown = !showDropdown"
+                        #dropdownBtn>
+                    <i class="fas fa-ellipsis-v"></i>
+                </button>
+                <!-- Dropdown Menu -->
+                @if (showDropdown) {
+                    <div class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-50 border border-gray-200">
+                        <div class="py-1">
+                            <button (click)="logout()" 
+                                    class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
+                                <i class="fas fa-sign-out-alt mr-2"></i>
+                                Cerrar Sesión
+                            </button>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</header>
+ }
+@else {
+ <!-- User Profile - Mobile -->
+ <div class="lg:hidden mb-6 bg-white rounded-xl shadow-sm p-4 flex items-center justify-between">
+    @if (user) {
+        <div class="flex items-center">
+            <div class="w-10 h-10 rounded-full bg-gradient-to-r from-brand-yellow to-brand-orange flex items-center justify-center text-white font-medium">
+                {{ user.name.charAt(0).toUpperCase() }}
+            </div>
+            <div class="ml-3">
+                <p class="font-medium">{{ user.name }}</p>
+                <p class="text-sm text-gray-500">{{ getRoleName(user.id_rol) }}</p>
+            </div>
+        </div>
+    }
+    <div class="relative">
+        <button class="text-gray-400" 
+                (click)="showDropdown = !showDropdown">
+            <i class="fas fa-ellipsis-v"></i>
+        </button>
+        <!-- Dropdown Menu -->
+        @if (showDropdown) {
+            <div class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-50 border border-gray-200">
+                <div class="py-1">
+                    <button (click)="logout()" 
+                            class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
+                        <i class="fas fa-sign-out-alt mr-2"></i>
+                        Cerrar Sesión
+                    </button>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+}
+
+
+
+

@@ -1,0 +1,11 @@
+{
+  "/api": {
+    "target": "https://testbackend.merakisys.com/public",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug",
+    "pathRewrite": {
+      "^/api": "/api"
+    }
+  }
+}

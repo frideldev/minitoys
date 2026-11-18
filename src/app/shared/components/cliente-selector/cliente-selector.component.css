@@ -1,0 +1,173 @@
+/* Cliente Selector Component Styles */
+.cliente-selector {
+  width: 100%;
+}
+
+.cliente-selector .ng-select {
+  min-height: 44px;
+}
+
+.cliente-selector .ng-select.ng-select-focused {
+  border-color: #f97316;
+  box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.1);
+}
+
+.cliente-selector .ng-select .ng-select-container {
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  transition: all 0.2s ease;
+}
+
+.cliente-selector .ng-select .ng-select-container:hover {
+  border-color: #9ca3af;
+}
+
+.cliente-selector .ng-select.ng-select-disabled .ng-select-container {
+  background-color: #f9fafb;
+  border-color: #e5e7eb;
+  cursor: not-allowed;
+}
+
+.cliente-selector .ng-dropdown-panel {
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.cliente-selector .ng-option {
+  padding: 12px 16px;
+  border-bottom: 1px solid #f3f4f6;
+  transition: background-color 0.2s ease;
+}
+
+.cliente-selector .ng-option:last-child {
+  border-bottom: none;
+}
+
+.cliente-selector .ng-option.ng-option-highlighted {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.cliente-selector .ng-option.ng-option-selected {
+  background-color: #f97316;
+  color: white;
+}
+
+.cliente-selector .ng-option.ng-option-selected.ng-option-highlighted {
+  background-color: #ea580c;
+  color: white;
+}
+
+/* Formulario de nuevo cliente */
+.cliente-selector .grid input {
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.cliente-selector .grid input:focus {
+  outline: none;
+  border-color: #f97316;
+  box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.1);
+}
+
+.cliente-selector .grid input.border-red-500 {
+  border-color: #ef4444;
+}
+
+.cliente-selector .grid input.border-red-500:focus {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.1);
+}
+
+/* Botones */
+.cliente-selector button {
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.cliente-selector button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.cliente-selector button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.cliente-selector button:disabled {
+  transform: none;
+  box-shadow: none;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .cliente-selector .grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .cliente-selector .flex.gap-2 {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .cliente-selector .flex.gap-2 .flex-1 {
+    width: 100%;
+  }
+}
+
+/* Loading state */
+.cliente-selector .fa-spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Form validation styles */
+.cliente-selector .text-red-500 {
+  display: block;
+  margin-top: 4px;
+  font-size: 0.75rem;
+  line-height: 1rem;
+}
+
+/* Brand colors */
+.bg-brand-yellow {
+  background-color: #fbbf24;
+}
+
+.bg-brand-orange {
+  background-color: #f97316;
+}
+
+.hover\:bg-brand-orange:hover {
+  background-color: #ea580c;
+}
+
+.focus\:ring-brand-orange:focus {
+  --tw-ring-color: rgba(249, 115, 22, 0.5);
+}
+
+/* Accessibility improvements */
+.cliente-selector button:focus {
+  outline: 2px solid #f97316;
+  outline-offset: 2px;
+}
+
+.cliente-selector input:focus {
+  outline: none;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .cliente-selector .ng-select .ng-select-container {
+    border-width: 2px;
+  }
+  
+  .cliente-selector .ng-option.ng-option-highlighted {
+    background-color: #000;
+    color: #fff;
+  }
+}

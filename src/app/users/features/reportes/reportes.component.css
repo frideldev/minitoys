@@ -1,0 +1,113 @@
+.stats-card {
+    transition: all 0.2s ease;
+}
+.stats-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+.chart-container {
+    height: 200px;
+    position: relative;
+}
+.chart-bar {
+    position: absolute;
+    bottom: 0;
+    width: 30px;
+    border-radius: 4px 4px 0 0;
+    transition: height 0.5s ease;
+}
+
+/* Estilos para el visor de recibo */
+.recibo-content {
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    line-height: 1.4;
+    color: #000;
+}
+
+/* Estilos específicos para el contenedor del recibo */
+.recibo-content .recibo-container {
+    max-width: 800px;
+    margin: auto;
+    border: 1px solid #000;
+    padding: 20px;
+}
+
+.recibo-content .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.recibo-content .title {
+    text-align: center;
+    margin-top: 10px;
+    font-weight: bold;
+}
+
+.recibo-content .info-empresa {
+    font-size: 13px;
+}
+
+.recibo-content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.recibo-content table,
+.recibo-content th,
+.recibo-content td {
+    border: 1px solid #000;
+}
+
+.recibo-content th,
+.recibo-content td {
+    padding: 6px;
+    text-align: left;
+}
+
+.recibo-content .no-border {
+    border: none;
+}
+
+.recibo-content .right {
+    text-align: right;
+}
+
+.recibo-content .detalle-pago td {
+    border: none;
+    padding: 4px;
+}
+
+.recibo-content .footer-line {
+    border-top: 1px solid black;
+    margin-top: 40px;
+}
+
+/* Títulos específicos */
+.recibo-content h1,
+.recibo-content h2,
+.recibo-content h3 {
+    margin: 10px 0;
+    color: #000;
+}
+
+.recibo-content h2 {
+    font-size: 1.2em;
+}
+
+/* Estilos de impresión */
+@media print {
+    .recibo-content {
+        font-size: 12px;
+        margin: 0;
+        padding: 0;
+    }
+    
+    .recibo-content .recibo-container {
+        border: 1px solid #000;
+        padding: 15px;
+        margin: 0;
+    }
+}

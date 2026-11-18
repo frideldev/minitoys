@@ -1,0 +1,24 @@
+<!-- Main Container -->
+<!-- Main Container -->
+<div class="flex flex-col h-full">
+  <app-header></app-header>
+
+  <!-- Main Content Wrapper -->
+  <div class="flex flex-1 overflow-hidden">
+    <!-- Left Sidebar (Desktop) -->
+    <aside class="hidden lg:flex lg:flex-col w-64 bg-sidebar-dark text-white">
+      <app-logo></app-logo>
+      <!-- Navigation -->
+      <nav class="flex-1 overflow-y-auto py-4">
+        <app-navbar></app-navbar>
+      </nav>
+    </aside>
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col overflow-hidden">
+      <app-topbar tipo="desktop"></app-topbar>
+      <!-- Dashboard Content -->
+      <ng-content></ng-content>
+    </main>
+  </div>
+  <app-footer></app-footer>
+</div>

@@ -1,0 +1,280 @@
+<app-layout>
+    <div class="flex flex-1 overflow-hidden">
+        <!-- Center Content Area -->
+        <div class="flex-1 overflow-y-auto p-4 lg:p-6 bg-gray-50">
+            <app-topbar tipo="mobile"></app-topbar>
+             <!-- Sales Form -->
+             <div class="bg-white rounded-xl shadow-sm overflow-hidden mb-6">
+                <!-- Form Content -->
+                <div class="p-6" [formGroup]="ventaForm">
+                    <!-- Indicador de Preventa Activa -->
+                    @if (currentPreventaId) {
+                        <div class="mb-4 p-3 bg-yellow-100 border border-yellow-400 text-yellow-800 rounded-lg">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center">
+                                    <i class="fas fa-clock mr-2"></i>
+                                    <span class="font-medium">Preventa Activa - ID: {{ currentPreventaId }}</span>
+                                </div>
+                                <div class="flex gap-2">
+                                    <button (click)="cancelarPreventa()" 
+                                            class="text-red-600 hover:text-red-800 text-sm"
+                                            title="Cancelar preventa">
+                                        <i class="fas fa-trash mr-1"></i> Cancelar
+                                    </button>
+                                    <button (click)="limpiarFormulario()" 
+                                            class="text-yellow-600 hover:text-yellow-800"
+                                            title="Limpiar formulario">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    
+                    <!-- Product Selection -->
+                    <div class="mb-6">
+                        <div class="mb-2 flex items-center justify-between gap-2">
+                            <label class="block text-sm font-medium text-gray-700">Producto</label>
+                            <div class="inline-flex overflow-hidden rounded-lg border border-gray-300 text-sm" role="group" aria-label="Modo de búsqueda">
+                                <button type="button"
+                                        (click)="setSearchMode('nombre')"
+                                        [attr.aria-pressed]="searchMode === 'nombre'"
+                                        [class]="'px-3 py-1 ' + (searchMode === 'nombre' ? 'bg-brand-orange text-white' : 'bg-white text-gray-700 hover:bg-gray-50')">
+                                    <i class="fas fa-search mr-1"></i> Nombre
+                                </button>
+                                <button type="button"
+                                        (click)="setSearchMode('codigo')"
+                                        [attr.aria-pressed]="searchMode === 'codigo'"
+                                        [class]="'px-3 py-1 ' + (searchMode === 'codigo' ? 'bg-brand-orange text-white' : 'bg-white text-gray-700 hover:bg-gray-50')">
+                                    <i class="fas fa-barcode mr-1"></i> Código
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Contador de productos -->
+                        <div class="text-sm text-gray-500 mb-2">
+                            {{ productosDisponibles.length }} productos disponibles
+                        </div>
+                        
+                        <!-- Selección de producto y cantidad -->
+                        @if (searchMode === 'codigo') {
+                            <div class="flex flex-col md:flex-row gap-4">
+                                <div class="flex-grow relative product-search-input">
+                                    <input type="text"
+                                           placeholder="Escribe o escanea el código (Enter para agregar)"
+                                           [(ngModel)]="codigoText"
+                                           [ngModelOptions]="{standalone: true}"
+                                           (input)="onCodigoInput()"
+                                           (focus)="onCodigoInput()"
+                                           (blur)="showDropdown = false"
+                                           (keydown.enter)="$event.preventDefault(); agregarPorCodigo()"
+                                           autocomplete="off"
+                                           aria-label="Código del producto"
+                                           class="w-full border border-gray-300 rounded-lg py-2 px-4 focus:outline-none focus:ring-2 focus:ring-brand-orange focus:border-transparent">
+
+                                    <div class="custom-dropdown" [class.show]="showDropdown && filteredProducts.length > 0">
+                                        @for (producto of filteredProducts; track producto.id) {
+                                            <div class="dropdown-option" (mousedown)="selectProductByCodigo(producto)">
+                                                <div class="option-main">{{ producto.codigo }} · {{ producto.descripcion }}</div>
+                                                <div class="option-details">
+                                                    <span class="option-price">Bs {{ producto.precioVenta }}</span>
+                                                    <span class="mx-2">•</span>
+                                                    <span class="option-stock">Stock: {{ producto.stock_global_actual }}</span>
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+
+                                    @if (codigoError) {
+                                        <p class="mt-2 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700" role="alert">{{ codigoError }}</p>
+                                    } @else if (selectedProduct) {
+                                        <p class="mt-1 text-sm text-gray-700"><i class="fas fa-check text-green-600 mr-1"></i>{{ selectedProduct.descripcion }} — Bs {{ selectedProduct.precioVenta }}</p>
+                                    } @else {
+                                        <p class="mt-1 text-xs text-gray-500">Enter con un código exacto agrega 1 unidad directamente.</p>
+                                    }
+                                </div>
+                                <div class="w-full md:w-32">
+                                    <input type="number"
+                                           formControlName="cantidad"
+                                           placeholder="Cantidad"
+                                           [max]="selectedProduct ? getStockRealDisponible(selectedProduct.id) : 999"
+                                           min="1"
+                                           class="w-full border border-gray-300 rounded-lg py-2 px-4 focus:outline-none focus:ring-2 focus:ring-brand-orange focus:border-transparent">
+                                    @if (selectedProduct) {
+                                        <div class="text-xs text-gray-500 mt-1">Stock disponible: {{ getStockRealDisponible(selectedProduct.id) }}</div>
+                                    }
+                                </div>
+                                <button type="button"
+                                        (click)="selectedProduct ? agregarItem() : agregarPorCodigo()"
+                                        [disabled]="selectedProduct ? !puedeAgregarItem : !codigoText.trim()"
+                                        class="bg-brand-orange text-white py-2 px-4 rounded-lg font-medium flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed">
+                                    <i class="fas fa-plus mr-2"></i> Agregar
+                                </button>
+                            </div>
+                        } @else {
+                        <div class="flex flex-col md:flex-row gap-4">
+                            <div class="flex-grow relative product-search-input">
+                                <input 
+                                    type="text" 
+                                    placeholder="Buscar producto..."
+                                    [(ngModel)]="selectedProductText"
+                                    [ngModelOptions]="{standalone: true}"
+                                    (input)="onProductSearch($event)"
+                                    (focus)="onInputFocus()"
+                                    (click)="onInputClick()"
+                                    (blur)="onInputBlur()"
+                                    [attr.data-invalid]="selectedProductText && !selectedProduct ? 'true' : null"
+                                    class="w-full border border-gray-300 rounded-lg py-2 px-4 focus:outline-none focus:ring-2 focus:ring-brand-orange focus:border-transparent">
+                                
+                                <!-- Dropdown personalizado -->
+                                <div class="custom-dropdown" [class.show]="showDropdown && (filteredProducts.length > 0 || showAllProducts)">
+                                    @for (producto of filteredProducts; track producto.id) {
+                                        <div class="dropdown-option" 
+                                             (mousedown)="selectProduct(producto)"
+                                             [class.highlighted]="selectedProductText && producto.descripcion.toLowerCase().includes(selectedProductText.toLowerCase())">
+                                            <div class="option-main">{{ producto.descripcion }}</div>
+                                            <div class="text-xs text-gray-400">Cód: {{ producto.codigo }}</div>
+                                            <div class="option-details">
+                                                <span class="option-price">Bs {{ producto.precioVenta }}</span>
+                                                <span class="mx-2">•</span>
+                                                <span class="option-stock">Stock: {{ producto.stock_global_actual }}</span>
+                                            </div>
+                                        </div>
+                                    }
+                                    @if (filteredProducts.length === 0 && selectedProductText && !showAllProducts) {
+                                        <div class="loading-option">No se encontraron productos</div>
+                                    }
+                                </div>
+                                
+                                <!-- Mensaje de validación -->
+                                @if (selectedProductText && !selectedProduct) {
+                                    <div class="absolute top-full left-0 right-0 mt-1 text-sm text-amber-600 bg-amber-50 border border-amber-200 rounded px-2 py-1 z-10">
+                                        <i class="fas fa-exclamation-triangle mr-1"></i>
+                                        Por favor, selecciona un producto válido de la lista
+                                    </div>
+                                }
+                            </div>
+                            <div class="w-full md:w-32">
+                                <input type="number" 
+                                       formControlName="cantidad"
+                                       placeholder="Cantidad" 
+                                       [max]="selectedProduct ? getStockRealDisponible(selectedProduct.id) : 999"
+                                       min="1"
+                                       class="w-full border border-gray-300 rounded-lg py-2 px-4 focus:outline-none focus:ring-2 focus:ring-brand-orange focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed">
+                                <!-- Mostrar stock real disponible del producto seleccionado -->
+                                @if (selectedProduct) {
+                                    <div class="text-xs text-gray-500 mt-1">
+                                        Stock disponible: {{ getStockRealDisponible(selectedProduct.id) }}
+                                        @if (getStockRealDisponible(selectedProduct.id) !== selectedProduct.stock_global_actual) {
+                                            <span class="text-orange-600">({{ selectedProduct.stock_global_actual - getStockRealDisponible(selectedProduct.id) }} en carrito)</span>
+                                        }
+                                    </div>
+                                }
+                            </div>
+                            <button type="button"
+                                    (click)="agregarItem()"
+                                    [disabled]="!puedeAgregarItem"
+                                    class="bg-brand-orange text-white py-2 px-4 rounded-lg font-medium flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed">
+                                <i class="fas fa-plus mr-2"></i> Agregar
+                            </button>
+                        </div>
+                        }
+                    </div>
+                    
+                    <!-- Products Table -->
+                    <div class="overflow-x-auto mb-6">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead>
+                                <tr class="bg-brand-yellow text-white">
+                                    <th class="px-6 py-3 text-left text-sm font-medium">Producto</th>
+                                    <th class="px-6 py-3 text-left text-sm font-medium">Cantidad</th>
+                                   
+                                    <th class="px-6 py-3 text-left text-sm font-medium">Precio Unitario</th>
+                                    <th class="px-6 py-3 text-left text-sm font-medium">Subtotal</th>
+                                    <th class="px-6 py-3 text-left text-sm font-medium">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                @if (items.length === 0) {
+                                    <tr>
+                                        <td colspan="6" class="px-6 py-4 text-center text-gray-500">
+                                            No hay productos agregados
+                                        </td>
+                                    </tr>
+                                } @else {
+                                    @for (item of items; track item.id; let i = $index) {
+                                        <tr [class.bg-yellow-50]="i % 2 === 0">
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                                {{ item.descripcion }}
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                                {{ item.cantidad }}
+                                            </td>
+                                          
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                                Bs {{ item.precioUnitario }}
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                                Bs {{ item.subtotal }}
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                                <button (click)="eliminarItem(i)" 
+                                                        class="bg-brand-orange text-white p-2 rounded-md hover:bg-brand-orange-dark">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                            @if (items.length > 0) {
+                                <tfoot>
+                                    <tr class="bg-gray-50">
+                                        <td colspan="3" class="px-6 py-4 text-right font-medium">Subtotal:</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-bold">
+                                            Bs {{ subtotal }}
+                                        </td>
+                                        <td></td>
+                                    </tr>
+                                </tfoot>
+                            }
+                        </table>
+                    </div>
+                    
+                    <!-- Totales -->
+                    @if (items.length > 0) {
+                        <div class="flex justify-between items-center py-3 border-t border-gray-200 mb-4">
+                            <span class="font-semibold text-gray-700">Subtotal: Bs {{ subtotal }}</span>
+                            <button type="button"
+                                    (click)="limpiarFormulario()"
+                                    class="text-sm text-gray-500 hover:text-gray-700">
+                                <i class="fas fa-eraser mr-1"></i> Limpiar
+                            </button>
+                        </div>
+                    }
+                </div>
+            </div>
+            <app-orden-venta
+                #ordenVenta
+                [embedded]="true"
+                (orderCompleted)="limpiarFormulario()">
+            </app-orden-venta>
+        </div>
+        <aside class="hidden lg:block w-80 bg-white border-l border-gray-200 overflow-y-auto">
+            <div class="p-4">
+                <app-pending-list
+                    [config]="ordenVenta.pendingConfig"
+                    (itemClick)="ordenVenta.onPendingItemClick($event)"
+                    (actionClick)="ordenVenta.onPendingActionClick($event)">
+                </app-pending-list>
+            </div>
+        </aside>
+    </div>
+
+    <!-- Visor de Recibo Reutilizable -->
+    <app-visor-recibo 
+        [isVisible]="mostrarVisorRecibo"
+        [ventaId]="ventaIdParaRecibo"
+        (onClose)="cerrarVisorRecibo()">
+    </app-visor-recibo>
+</app-layout>

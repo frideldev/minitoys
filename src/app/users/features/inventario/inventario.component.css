@@ -1,0 +1,4 @@
+.selected-row {
+    background-color: rgba(251, 191, 36, 0.1);
+    border-left: 4px solid #FBBF24;
+}

@@ -1,0 +1,143 @@
+@if (isOpen) {
+    <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-3xl max-h-[90vh] flex flex-col" (click)="$event.stopPropagation()">
+            <div class="px-6 py-4 border-b border-gray-200 flex-shrink-0">
+                <h3 class="text-xl font-semibold text-gray-800">
+                    {{ isEdit ? 'Editar producto' : 'Nuevo producto' }}
+                </h3>
+            </div>
+
+            <div class="flex-1 overflow-y-auto">
+                <form [formGroup]="inventarioForm" class="p-6">
+                    <div class="space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Código</label>
+                                <input type="text" formControlName="codigo"
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-orange">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Descripción</label>
+                                <input type="text" formControlName="descripcion"
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-orange">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Lugar</label>
+                                <select formControlName="id_lugar"
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-orange">
+                                    <option value="">Seleccione un lugar</option>
+                                    @for (lugar of lugaresState.lugares(); track lugar.id) {
+                                        <option [value]="lugar.id">{{ lugar.nombre }}</option>
+                                    }
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Categoría</label>
+                                <select formControlName="categoria_id"
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-orange">
+                                    <option value="">Seleccione una categoría</option>
+                                    @for (categoria of categoriasFiltradas; track categoria.id) {
+                                        <option [value]="categoria.id">{{ categoria.nombre }}</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Subcategoría</label>
+                                <select formControlName="sub_categoria_id"
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-orange">
+                                    <option value="">Seleccione una subcategoría</option>
+                                    @for (subcategoria of subcategoriasFiltradas; track subcategoria.id) {
+                                        <option [value]="subcategoria.id">{{ subcategoria.nombre }}</option>
+                                    }
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Fecha de actualización</label>
+                                <input type="date" formControlName="actualizacion"
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-orange">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Stock actual</label>
+                                <input type="number" min="0" formControlName="stock_global_actual"
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-orange disabled:bg-gray-100">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Stock mínimo</label>
+                                <input type="number" min="0" formControlName="stock_global_minimo"
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-orange">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Precio de compra (Bs)</label>
+                                <input type="number" min="0" step="0.01" formControlName="precioCompra"
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-orange">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Precio de venta (Bs)</label>
+                                <input type="number" min="0" step="0.01" formControlName="precioVenta"
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-orange">
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-md border border-gray-200">
+                            <input type="checkbox" id="visibilidad"
+                                   [checked]="inventarioForm.get('visibilidad')?.value === 1"
+                                   (change)="inventarioForm.patchValue({visibilidad: $any($event.target).checked ? 1 : 0})"
+                                   class="w-4 h-4 accent-brand-orange cursor-pointer">
+                            <label for="visibilidad" class="text-sm font-medium text-gray-700 cursor-pointer">
+                                Producto visible
+                            </label>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Imagen del producto</label>
+                            <input type="file" (change)="onFileSelected($event)" accept="image/*"
+                                   class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:font-semibold file:bg-brand-orange file:text-white">
+                        </div>
+
+                        <div class="flex flex-wrap gap-6">
+                            @if (isEdit && currentImageUrl) {
+                                <div>
+                                    <p class="text-sm text-gray-600 mb-2">Imagen actual</p>
+                                    <img [src]="currentImageUrl" alt="Imagen actual del producto"
+                                         class="w-32 h-32 object-cover rounded-lg border border-gray-300">
+                                </div>
+                            }
+                            @if (selectedFile) {
+                                <div>
+                                    <p class="text-sm text-gray-600 mb-2">Nueva imagen</p>
+                                    <img [src]="getFilePreview()" alt="Vista previa del producto"
+                                         class="w-32 h-32 object-cover rounded-lg border border-gray-300">
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="px-6 py-4 border-t border-gray-200 flex-shrink-0 bg-gray-50">
+                <div class="flex justify-end gap-3">
+                    <button type="button" (click)="onClose()"
+                            class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">
+                        Cancelar
+                    </button>
+                    <button type="button" (click)="onSubmit()" [disabled]="!inventarioForm.valid"
+                            class="px-4 py-2 bg-gradient-to-r from-brand-yellow to-brand-orange text-white rounded-md hover:opacity-90 disabled:opacity-50">
+                        {{ isEdit ? 'Actualizar' : 'Guardar producto' }}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+}

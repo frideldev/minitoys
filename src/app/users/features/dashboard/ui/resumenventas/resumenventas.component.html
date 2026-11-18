@@ -1,0 +1,49 @@
+  <!-- Sales Summary -->
+  <h2 class="text-xl font-bold text-gray-800 mb-4">Resumen Ventas</h2>
+  <div class="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+      <!-- Card 1 - Ventas Totales -->
+      <div class="bg-white rounded-xl shadow-sm p-4 lg:p-5 border border-gray-100">
+          <div class="hidden lg:flex rounded-full bg-blue-50 p-3 mb-3">
+              <i class="fas fa-dollar-sign text-blue-500"></i>
+          </div>
+          <div>
+              <p class="text-sm text-gray-500">Ventas Totales</p>
+              <p class="text-xl font-bold">{{ formatearVentasTotales(ventasTotales()) }}</p>
+          </div>
+      </div>
+      
+      <!-- Card 2 - Pedidos Pendientes -->
+      <div class="bg-white rounded-xl shadow-sm p-4 lg:p-5 border border-gray-100">
+          <div class="hidden lg:flex rounded-full bg-orange-50 p-3 mb-3">
+              <i class="fas fa-box text-orange-500"></i>
+          </div>
+          <div>
+              <p class="text-sm text-gray-500">Pedidos Pendientes</p>
+              <p class="text-xl font-bold">{{ pedidosPendientes() }}</p>
+          </div>
+      </div>
+      
+    
+      
+      <!-- Card 3 - Alertas Stock -->
+      <div class="bg-white rounded-xl shadow-sm p-4 lg:p-5 border border-gray-100">
+          <div class="hidden lg:flex rounded-full p-3 mb-3" 
+               [ngClass]="{
+                 'bg-red-50': alertasCriticas() > 0,
+                 'bg-orange-50': alertasCriticas() === 0 && alertasStock() > 0,
+                 'bg-green-50': alertasStock() === 0
+               }">
+              <i class="fas fa-exclamation-triangle" 
+                 [ngClass]="{
+                   'text-red-500': alertasCriticas() > 0,
+                   'text-orange-500': alertasCriticas() === 0 && alertasStock() > 0,
+                   'text-green-500': alertasStock() === 0
+                 }"></i>
+          </div>
+          <div>
+              <p class="text-sm text-gray-500">Alertas Stock</p>
+              <p class="text-xl font-bold" [ngClass]="getAlertClass()">{{ alertasStock() }}</p>
+              <p class="text-xs text-gray-400 mt-1">{{ getAlertMessage() }}</p>
+          </div>
+      </div>
+  </div>

@@ -1,0 +1,104 @@
+<!-- Cliente Selector Component -->
+<div class="cliente-selector">
+    <label class="block text-sm font-medium text-gray-700 mb-2">Cliente</label>
+    <div class="flex gap-2 items-start">
+        <div class="flex-1 relative">
+            <ng-select
+                [items]="clienteState().clientes"
+                [clearable]="false"
+                [searchable]="true"
+                [disabled]="disabled"
+                bindLabel="full_name"
+                [placeholder]="placeholder"
+                [ngModel]="selectedCliente"
+                [compareWith]="compareClientes"
+                (ngModelChange)="onClienteChange($event)">
+                <ng-template ng-option-tmp let-item="item">
+                    <div class="flex items-center">
+                        <div class="flex-1">
+                            <div class="font-medium">{{ item.nombre }} {{ item.apellido }}</div>
+                            <div class="text-sm text-gray-500">{{ item.celular }}</div>
+                        </div>
+                    </div>
+                </ng-template>
+            </ng-select>
+        </div>
+        
+        @if (showAddButton) {
+            <button type="button"
+                    (click)="toggleNuevoCliente()"
+                    [disabled]="disabled"
+                    class="bg-brand-yellow text-white p-2 rounded-lg hover:bg-brand-orange transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    title="Agregar nuevo cliente">
+                <i class="fas fa-plus"></i>
+            </button>
+        }
+    </div>
+    
+    <!-- Nuevo Cliente Form -->
+    @if (mostrarNuevoCliente) {
+        <div class="mt-4 p-4 bg-gray-50 rounded-lg border">
+            <h4 class="text-sm font-medium text-gray-700 mb-3">Nuevo Cliente</h4>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                    <label class="block text-xs text-gray-600 mb-1">
+                        Nombre <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" 
+                           [(ngModel)]="nuevoCliente.nombre"
+                           [class.border-red-500]="hasError('nombre')"
+                           placeholder="Nombre"
+                           class="w-full border border-gray-300 rounded-lg py-2 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-orange focus:border-transparent">
+                    @if (hasError('nombre')) {
+                        <span class="text-red-500 text-xs mt-1">{{ getErrorMessage('nombre') }}</span>
+                    }
+                </div>
+                <div>
+                    <label class="block text-xs text-gray-600 mb-1">
+                        Apellido <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" 
+                           [(ngModel)]="nuevoCliente.apellido"
+                           [class.border-red-500]="hasError('apellido')"
+                           placeholder="Apellido"
+                           class="w-full border border-gray-300 rounded-lg py-2 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-orange focus:border-transparent">
+                    @if (hasError('apellido')) {
+                        <span class="text-red-500 text-xs mt-1">{{ getErrorMessage('apellido') }}</span>
+                    }
+                </div>
+                <div>
+                    <label class="block text-xs text-gray-600 mb-1">
+                        Celular <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" 
+                           [(ngModel)]="nuevoCliente.celular"
+                           [class.border-red-500]="hasError('celular')"
+                           placeholder="Celular"
+                           class="w-full border border-gray-300 rounded-lg py-2 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-orange focus:border-transparent">
+                    @if (hasError('celular')) {
+                        <span class="text-red-500 text-xs mt-1">{{ getErrorMessage('celular') }}</span>
+                    }
+                </div>
+            </div>
+            <div class="flex gap-2 mt-3">
+                <button type="button"
+                        (click)="guardarNuevoCliente()"
+                        [disabled]="!isFormValid() || isLoading"
+                        class="bg-brand-orange text-white py-2 px-4 rounded-lg hover:bg-orange-600 transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed">
+                    @if (isLoading) {
+                        <i class="fas fa-spinner fa-spin mr-1"></i>
+                    } @else {
+                        <i class="fas fa-save mr-1"></i>
+                    }
+                    Guardar
+                </button>
+                <button type="button"
+                        (click)="cancelarNuevoCliente()"
+                        [disabled]="isLoading"
+                        class="bg-gray-400 text-white py-2 px-4 rounded-lg hover:bg-gray-500 transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed">
+                    <i class="fas fa-times mr-1"></i> Cancelar
+                </button>
+            </div>
+        </div>
+    }
+</div>

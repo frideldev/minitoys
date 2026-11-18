@@ -1,0 +1,48 @@
+ <!-- Weekly Sales -->
+ <div class="bg-white rounded-xl shadow-sm p-4 lg:p-6 border border-gray-100">
+    <h2 class="text-xl font-bold text-gray-800 mb-6">Ventas Semanales</h2>
+    
+    <!-- Line Chart -->
+    <div class="h-48 lg:h-64">
+        <!-- This would be a real chart in a production environment -->
+        <div class="relative h-full">
+            <!-- Line -->
+            <svg class="absolute inset-0" viewBox="0 0 700 200">
+                <polyline
+                    fill="none"
+                    stroke="url(#gradient)"
+                    stroke-width="3"
+                    points="0,180 100,160 200,120 300,140 400,130 500,60 600,180"
+                />
+                <defs>
+                    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" stop-color="#FFB800" />
+                        <stop offset="100%" stop-color="#FF8A00" />
+                    </linearGradient>
+                </defs>
+            </svg>
+            
+            <!-- Points -->
+            <div class="absolute inset-0 flex justify-between items-end pb-[20px]">
+                <div class="h-2 w-2 rounded-full bg-brand-yellow border-2 border-white shadow-md"></div>
+                <div class="h-2 w-2 rounded-full bg-brand-yellow border-2 border-white shadow-md"></div>
+                <div class="h-2 w-2 rounded-full bg-brand-yellow border-2 border-white shadow-md"></div>
+                <div class="h-2 w-2 rounded-full bg-brand-yellow border-2 border-white shadow-md"></div>
+                <div class="h-2 w-2 rounded-full bg-brand-yellow border-2 border-white shadow-md"></div>
+                <div class="h-2 w-2 rounded-full bg-brand-orange border-2 border-white shadow-md"></div>
+                <div class="h-2 w-2 rounded-full bg-brand-yellow border-2 border-white shadow-md"></div>
+            </div>
+            
+            <!-- X-axis labels -->
+            <div class="absolute bottom-0 inset-x-0 flex justify-between text-xs text-gray-500">
+                <div>Lun</div>
+                <div>Mar</div>
+                <div>Mié</div>
+                <div>Jue</div>
+                <div>Vie</div>
+                <div>Sáb</div>
+                <div>Dom</div>
+            </div>
+        </div>
+    </div>
+</div>

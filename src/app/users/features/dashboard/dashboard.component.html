@@ -1,0 +1,21 @@
+<app-layout>
+  <div class="flex flex-1 overflow-hidden">
+    <div class="flex-1 overflow-y-auto p-4 lg:p-6 bg-gray-50">
+    <app-topbar tipo="mobile"></app-topbar>
+      <app-resumenventas></app-resumenventas>
+      <app-stockcritico></app-stockcritico>
+      <!-- <app-weeksales></app-weeksales> -->
+    </div>
+    <!-- Right Sidebar -->
+    <div
+      class="hidden lg:block w-80 bg-white border-l border-gray-200 overflow-y-auto">
+      
+      <!-- Pending List Component -->
+      <div class="p-6">
+        <app-pending-list 
+          [config]="pendingConfig">
+        </app-pending-list>
+      </div>
+    </div>
+  </div>
+</app-layout>

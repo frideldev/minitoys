@@ -1,0 +1,441 @@
+<app-layout>
+    <div class="flex flex-1 overflow-hidden">
+        <!-- Center Content Area -->
+        <div class="flex-1 overflow-y-auto p-4 lg:p-6 bg-gray-50">
+            <app-topbar tipo="reportes"></app-topbar>
+           
+            <!-- Reports Header -->
+            <div class="flex justify-between items-center mb-6">
+                <div>
+                    <h1 class="text-2xl font-bold text-brand-orange">Ventas del Día</h1>
+                    <p class="text-sm text-gray-600 mt-1">{{ fechaHoy }}</p>
+                </div>
+                <button 
+                    (click)="abrirModalCierre()"
+                    [disabled]="isCajaCerrada"
+                    [class]="isCajaCerrada ? 
+                        'bg-gray-400 text-gray-600 cursor-not-allowed py-2 px-4 rounded-lg flex items-center' : 
+                        'bg-brand-orange text-white py-2 px-4 rounded-lg flex items-center hover:bg-orange-600 transition-colors'">
+                    <i class="fas fa-cash-register mr-2"></i> 
+                    {{ isCajaCerrada ? 'Caja Cerrada' : 'Cierre de Caja Diario' }}
+                </button>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                @if (resumenCaja(); as resumen) {
+                    <!-- Ventas Totales -->
+                    <div class="stats-card bg-white rounded-xl shadow-sm p-4 border-l-4 border-green-500">
+                        <h3 class="text-sm font-medium text-gray-600">Ventas del Día</h3>
+                        <p class="text-2xl font-bold mt-1">{{ formatearTotal(resumen.totalVentas) }}</p>
+                        <div class="flex items-center mt-2 text-xs text-green-600">
+                            <span class="font-medium">{{ resumen.numeroVentas }} ventas completadas</span>
+                        </div>
+                    </div>
+
+                    <!-- Estadísticas por Casos de Venta -->
+                    @for (estadistica of estadisticasPorCasosVenta; track estadistica.tipo) {
+                        <div class="stats-card bg-white rounded-xl shadow-sm p-4 border-l-4"
+                             [class]="'border-' + estadistica.color + '-500'">
+                            <h3 class="text-sm font-medium text-gray-600 flex items-center">
+                                <i [class]="estadistica.icono + ' mr-2'"></i>
+                                {{ estadistica.titulo }}
+                            </h3>
+                            @if (estadistica.total > 0) {
+                                <p class="text-2xl font-bold mt-1">{{ formatearTotal(estadistica.total) }}</p>
+                                <div class="flex items-center mt-2 text-xs"
+                                     [class]="'text-' + estadistica.color + '-600'">
+                                    <span class="font-medium">{{ estadistica.cantidad }} ventas</span>
+                                    @if (estadistica.descripcion) {
+                                        <span class="ml-1 text-gray-500">• {{ estadistica.descripcion }}</span>
+                                    }
+                                </div>
+                            } @else {
+                                <p class="text-2xl font-bold mt-1">{{ estadistica.cantidad }}</p>
+                                <div class="flex items-center mt-2 text-xs"
+                                     [class]="'text-' + estadistica.color + '-600'">
+                                    <span class="font-medium">{{ estadistica.descripcion }}</span>
+                                </div>
+                            }
+                        </div>
+                    }
+                } @else {
+                    <!-- Loading placeholders -->
+                    @for (i of [1,2,3,4]; track i) {
+                        <div class="stats-card bg-white rounded-xl shadow-sm p-4 border-l-4 border-gray-300">
+                            <div class="animate-pulse">
+                                <div class="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+                                <div class="h-8 bg-gray-200 rounded w-1/2 mb-2"></div>
+                                <div class="h-3 bg-gray-200 rounded w-2/3"></div>
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+
+            <!-- Mensaje de Caja Cerrada -->
+            @if (isCajaCerrada) {
+                <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6 rounded-lg">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-exclamation-triangle text-yellow-400 text-xl"></i>
+                        </div>
+                        <div class="ml-3">
+                            <h3 class="text-sm font-medium text-yellow-800">
+                                Caja Cerrada
+                            </h3>
+                            <p class="text-sm text-yellow-700 mt-1">
+                                {{ mensajeCierreCaja }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            <!-- Quick Actions -->
+            <div class="flex flex-wrap gap-3 mb-6">
+                <!-- Sección de acciones rápidas vacía - elementos removidos -->
+            </div>
+
+            <!-- Tabla 1: Ventas Completadas del Día -->
+            <div class="bg-white rounded-xl shadow-sm overflow-hidden mb-6">
+                <div class="p-4 border-b border-gray-100">
+                    <h2 class="text-xl font-bold text-brand-orange">Ventas Completadas del Día</h2>
+                    <p class="text-sm text-gray-600 mt-1">Solo ventas recogidas del día de hoy</p>
+                </div>
+                <div class="overflow-x-auto">
+                    @if (isLoading) {
+                        <!-- Loading state -->
+                        <div class="p-8 text-center">
+                            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-orange mx-auto mb-4"></div>
+                            <p class="text-gray-500">Cargando ventas del día...</p>
+                        </div>
+                    } @else if (isCajaCerrada) {
+                        <!-- Caja cerrada state -->
+                        <div class="p-8 text-center">
+                            <i class="fas fa-lock text-4xl text-yellow-500 mb-4"></i>
+                            <h3 class="text-lg font-medium text-gray-600 mb-2">Caja Cerrada para Hoy</h3>
+                            <p class="text-gray-500 mb-2">Ya se realizó el cierre de caja para el día de hoy.</p>
+                            <p class="text-sm text-gray-400 bg-yellow-50 border border-yellow-200 rounded-lg p-3 mx-auto max-w-md">
+                                <i class="fas fa-info-circle mr-1"></i>
+                                Las ventas completadas ya fueron registradas en el cierre diario.
+                                Consulta el reporte anterior para ver los detalles.
+                            </p>
+                        </div>
+                    } @else if (ventasCompletadasDelDia().length === 0) {
+                        <!-- Empty state -->
+                        <div class="p-8 text-center">
+                            <i class="fas fa-check-circle text-4xl text-gray-300 mb-4"></i>
+                            <h3 class="text-lg font-medium text-gray-600 mb-2">No hay ventas completadas</h3>
+                            <p class="text-gray-500">No se encontraron ventas completadas para el día de hoy.</p>
+                        </div>
+                    } @else {
+                        <!-- Table with data -->
+                        <table class="min-w-full">
+                            <thead>
+                                <tr class="bg-green-600 text-white">
+                                    <th class="py-3 px-4 text-left">Hora</th>
+                                    <th class="py-3 px-4 text-left">Cliente</th>
+                                    <th class="py-3 px-4 text-left">Productos</th>
+                                    <th class="py-3 px-4 text-left">Total</th>
+                                    <th class="py-3 px-4 text-left">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200">
+                                @for (venta of ventasCompletadasDelDia(); track $index) {
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="py-3 px-4 text-sm font-medium text-gray-900">
+                                            {{ venta.hora }}
+                                        </td>
+                                        <td class="py-3 px-4 text-sm text-gray-900">
+                                            {{ venta.cliente }}
+                                        </td>
+                                        <td class="py-3 px-4 text-sm text-gray-600">
+                                            {{ venta.productos }}
+                                        </td>
+                                        <td class="py-3 px-4 text-sm font-medium text-gray-900">
+                                            {{ formatearTotal(venta.total) }}
+                                        </td>
+                                        <td class="py-3 px-4 text-sm">
+                                            <div class="flex items-center gap-2">
+                                                <button 
+                                                    (click)="verRecibo(venta)"
+                                                    class="text-brand-orange hover:text-orange-600 transition-colors"
+                                                    title="Ver recibo cliente">
+                                                    <i class="fas fa-receipt"></i>
+                                                </button>
+                                                <button
+                                                    (click)="devolverVenta(venta)"
+                                                    [disabled]="accionEnProceso() === venta.id"
+                                                    class="text-blue-600 hover:text-blue-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                                    title="Registrar devolución">
+                                                    <i class="fas fa-undo"></i>
+                                                </button>
+                                                <button
+                                                    (click)="anularVenta(venta)"
+                                                    [disabled]="accionEnProceso() === venta.id"
+                                                    class="text-red-600 hover:text-red-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                                    title="Anular venta">
+                                                    <i class="fas fa-ban"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                </div>
+            </div>
+
+            <!-- Tabla 2: Ventas Pendientes (todas las fechas) -->
+            <div class="bg-white rounded-xl shadow-sm overflow-hidden mb-6">
+                <div class="p-4 border-b border-gray-100">
+                    <h2 class="text-xl font-bold text-orange-600">Ventas Pendientes</h2>
+                    <p class="text-sm text-gray-600 mt-1">Todas las ventas que no han sido recogidas (sin filtro de fecha)</p>
+                </div>
+                <div class="overflow-x-auto">
+                    @if (isLoading) {
+                        <!-- Loading state -->
+                        <div class="p-8 text-center">
+                            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600 mx-auto mb-4"></div>
+                            <p class="text-gray-500">Cargando ventas pendientes...</p>
+                        </div>
+                    } @else if (ventasPendientes().length === 0) {
+                        <!-- Empty state -->
+                        <div class="p-8 text-center">
+                            <i class="fas fa-clock text-4xl text-gray-300 mb-4"></i>
+                            <h3 class="text-lg font-medium text-gray-600 mb-2">No hay ventas pendientes</h3>
+                            <p class="text-gray-500">Todas las ventas han sido recogidas.</p>
+                        </div>
+                    } @else {
+                        <!-- Table with pending data -->
+                        <table class="min-w-full">
+                            <thead>
+                                <tr class="bg-orange-600 text-white">
+                                    <th class="py-3 px-4 text-left">Fecha</th>
+                                    <th class="py-3 px-4 text-left">Cliente</th>
+                                    <th class="py-3 px-4 text-left">Productos</th>
+                                    <th class="py-3 px-4 text-left">Total</th>
+                                    <th class="py-3 px-4 text-left">Saldo/Adelanto</th>
+                                    <th class="py-3 px-4 text-left">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200">
+                                @for (venta of ventasPendientes(); track $index) {
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="py-3 px-4 text-sm font-medium text-gray-900">
+                                            {{ formatearFecha(venta.fecha || venta.created_at || '') }}
+                                        </td>
+                                        <td class="py-3 px-4 text-sm text-gray-900">
+                                            {{ venta.cliente }}
+                                        </td>
+                                        <td class="py-3 px-4 text-sm text-gray-600">
+                                            {{ venta.productos }}
+                                        </td>
+                                        <td class="py-3 px-4 text-sm font-medium text-gray-900">
+                                            {{ formatearTotal(venta.total) }}
+                                        </td>
+                                        <td class="py-3 px-4 text-sm">
+                                            @switch (determinarTipoVenta(venta)) {
+                                                @case ('preventa_sin_adelanto') {
+                                                    <span class="text-yellow-600 font-medium">
+                                                        <i class="fas fa-clock mr-1"></i>
+                                                        Sin adelanto
+                                                    </span>
+                                                    <div class="text-xs text-gray-500">
+                                                        Por cobrar: {{ formatearTotal(venta.total) }}
+                                                    </div>
+                                                }
+                                                @case ('preventa_con_adelanto') {
+                                                    <span class="text-orange-600 font-medium">
+                                                        <i class="fas fa-coins mr-1"></i>
+                                                        Adelanto: {{ formatearTotal(venta.saldo) }}
+                                                    </span>
+                                                    <div class="text-xs text-gray-500">
+                                                        Falta: {{ formatearTotal(venta.total - venta.saldo) }}
+                                                    </div>
+                                                }
+                                                @default {
+                                                    <span class="text-gray-600">
+                                                        <i class="fas fa-question-circle mr-1"></i>
+                                                        Desconocido
+                                                    </span>
+                                                }
+                                            }
+                                        </td>
+                                        <td class="py-3 px-4 text-sm">
+                                            <div class="flex items-center gap-2">
+                                                <button 
+                                                    (click)="verRecibo(venta)"
+                                                    class="text-orange-600 hover:text-orange-800 transition-colors"
+                                                    title="Ver recibo cliente">
+                                                    <i class="fas fa-receipt"></i>
+                                                </button>
+                                                <button
+                                                    (click)="devolverVenta(venta)"
+                                                    [disabled]="accionEnProceso() === venta.id"
+                                                    class="text-blue-600 hover:text-blue-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                                    title="Registrar devolución">
+                                                    <i class="fas fa-undo"></i>
+                                                </button>
+                                                <button
+                                                    (click)="anularVenta(venta)"
+                                                    [disabled]="accionEnProceso() === venta.id"
+                                                    class="text-red-600 hover:text-red-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                                    title="Anular venta">
+                                                    <i class="fas fa-ban"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                </div>
+            </div>
+
+        </div>
+        <!-- Right Sidebar -->
+        <div class="hidden lg:block w-80 bg-white border-l border-gray-200 overflow-y-auto">
+            <app-reporteanterior></app-reporteanterior>
+        </div>
+    </div>  
+
+    <!-- Modal de Cierre de Caja -->
+    @if (mostrarModalCierre()) {
+        <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div class="bg-white rounded-xl shadow-xl max-w-md w-full mx-4">
+                <!-- Header del Modal -->
+                <div class="p-6 border-b border-gray-200">
+                    <h2 class="text-xl font-bold text-gray-900">Cierre de Caja Diario</h2>
+                    <p class="text-sm text-gray-600 mt-1">{{ fechaHoy }}</p>
+                </div>
+
+                <!-- Contenido del Modal -->
+                <div class="p-6">
+                    @if (resumenCaja(); as resumen) {
+                        <div class="space-y-4">
+                            <!-- Resumen de ventas -->
+                            <div class="bg-gray-50 rounded-lg p-4">
+                                <h3 class="font-medium text-gray-900 mb-3">Resumen del día</h3>
+                                <div class="space-y-2 text-sm">
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">Total de ventas:</span>
+                                        <span class="font-medium">{{ formatearTotal(resumen.totalVentas) }}</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">Número de ventas:</span>
+                                        <span class="font-medium">{{ resumen.numeroVentas }}</span>
+                                    </div>
+                                    <div class="border-t pt-2 mt-3">
+                                        @for (estadistica of estadisticasPorCasosVenta; track estadistica.tipo) {
+                                            @if (estadistica.total > 0 || estadistica.cantidad > 0) {
+                                                <div class="flex justify-between">
+                                                    <span class="text-gray-600 flex items-center">
+                                                        <i [class]="estadistica.icono + ' mr-1 text-xs'"></i>
+                                                        {{ estadistica.titulo }}:
+                                                    </span>
+                                                    @if (estadistica.total > 0) {
+                                                        <span class="font-medium">{{ formatearTotal(estadistica.total) }} ({{ estadistica.cantidad }})</span>
+                                                    } @else {
+                                                        <span class="font-medium">{{ estadistica.cantidad }} sin adelanto</span>
+                                                    }
+                                                </div>
+                                            }
+                                        }
+                                    </div>
+                                    @if (resumen.ventasPendientes > 0) {
+                                        <div class="flex justify-between text-orange-600">
+                                            <span>Preventas por completar:</span>
+                                            <span class="font-medium">{{ resumen.ventasPendientes }}</span>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+
+                            <!-- Advertencia si hay preventas pendientes -->
+                            @if (resumen.ventasPendientes > 0) {
+                                <div class="bg-orange-50 border border-orange-200 rounded-lg p-4">
+                                    <div class="flex items-start">
+                                        <i class="fas fa-exclamation-triangle text-orange-500 mt-0.5 mr-3"></i>
+                                        <div>
+                                            <h4 class="text-orange-800 font-medium">Preventas pendientes</h4>
+                                            <p class="text-orange-700 text-sm mt-1">
+                                                Hay {{ resumen.ventasPendientes }} preventas que no se incluirán en el cierre.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+
+                            <!-- Confirmación -->
+                            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                                <div class="flex items-start">
+                                    <i class="fas fa-info-circle text-blue-500 mt-0.5 mr-3"></i>
+                                    <div>
+                                        <h4 class="text-blue-800 font-medium">Confirmar cierre</h4>
+                                        <p class="text-blue-700 text-sm mt-1">
+                                            Esta acción registrará el cierre del día y no se podrá deshacer.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Observaciones -->
+                            <div>
+                                <label for="observaciones-cierre" class="block text-sm font-medium text-gray-700 mb-1">
+                                    Observaciones <span class="text-gray-400 text-xs font-normal">(opcional)</span>
+                                </label>
+                                <textarea
+                                    id="observaciones-cierre"
+                                    rows="3"
+                                    [value]="observacionesCierre()"
+                                    (input)="observacionesCierre.set($any($event.target).value)"
+                                    [disabled]="cierreEnProceso()"
+                                    placeholder="Ej: novedades del día, diferencias en caja, observaciones generales..."
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-orange focus:border-transparent resize-none disabled:opacity-50 disabled:bg-gray-50">
+                                </textarea>
+                            </div>
+                        </div>
+                    } @else {
+                        <div class="text-center py-8">
+                            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-orange mx-auto mb-4"></div>
+                            <p class="text-gray-500">Calculando resumen...</p>
+                        </div>
+                    }
+                </div>
+
+                <!-- Footer del Modal -->
+                <div class="p-6 border-t border-gray-200 flex justify-end space-x-3">
+                    <button 
+                        (click)="cancelarCierre()"
+                        [disabled]="cierreEnProceso()"
+                        class="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors disabled:opacity-50">
+                        Cancelar
+                    </button>
+                    <button 
+                        (click)="confirmarCierreCaja()"
+                        [disabled]="cierreEnProceso()"
+                        class="px-4 py-2 bg-brand-orange text-white hover:bg-orange-600 rounded-lg transition-colors disabled:opacity-50 flex items-center">
+                        @if (cierreEnProceso()) {
+                            <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                            Procesando...
+                        } @else {
+                            <i class="fas fa-check mr-2"></i>
+                            Confirmar Cierre
+                        }
+                    </button>
+                </div>
+            </div>
+        </div>
+    }
+
+    <!-- Visor de Recibo Reutilizable -->
+    <app-visor-recibo 
+        [isVisible]="mostrarVisorRecibo()"
+        [ventaId]="ventaIdActual()"
+        (onClose)="cerrarVisorRecibo()">
+    </app-visor-recibo>
+</app-layout>

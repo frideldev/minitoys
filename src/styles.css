@@ -1,0 +1,12 @@
+/* You can add global styles to this file, and also import other style files */
+@import "tailwindcss";
+@import "@ng-select/ng-select/themes/default.theme.css";
+
+@theme {
+    --color-brand-yellow: #FFB800;
+    --color-brand-orange: #FF8A00;
+    --color-brand-blue: #3b82f6;
+    --color-sidebar-dark: #111827;
+    --color-sidebar-darker: #0B111E;
+    /* ... */
+  }
